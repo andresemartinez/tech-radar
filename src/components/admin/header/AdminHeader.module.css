@@ -1,0 +1,9 @@
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: calc(100% - var(--header-horizontal-padding) * 2px);
+    height: var(--header-height);
+    padding: 0 var(--header-horizontal-padding);
+
+}

@@ -3,7 +3,8 @@
  */
 import * as trpcNext from '@trpc/server/adapters/next';
 import { createContext } from '~/server/context';
-import { appRouter } from '~/server/routers/_app';
+import { AppRouter, appRouter } from '~/server/routers/_app';
+import { inferProcedureOutput } from '@trpc/server';
 
 export default trpcNext.createNextApiHandler({
   router: appRouter,
@@ -33,3 +34,7 @@ export default trpcNext.createNextApiHandler({
   //   // ...
   // },
 });
+
+export type inferQueryResponse<
+  TRouteKey extends keyof AppRouter['_def']['queries'],
+> = inferProcedureOutput<AppRouter['_def']['queries'][TRouteKey]>;

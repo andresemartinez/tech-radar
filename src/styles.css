@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --header-height: 56px;
+    --header-horizontal-padding: 24px;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    width: 100vw;
+    min-height: calc(100vh - var(--header-height));
+}

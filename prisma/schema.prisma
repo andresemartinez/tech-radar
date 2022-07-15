@@ -10,13 +10,96 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Post {
-  id    String @id @default(uuid())
-  title String
-  text  String
+// Next Auth --------------------------------------------------------------------------------------
 
-  // To return `Date`s intact through the API we need to add data transformers
-  // https://trpc.io/docs/data-transformers
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Tech radar -------------------------------------------------------------------------------------
+
+model Professional {
+  id               String      @id @default(uuid())
+  creationDateTime DateTime    @default(now())
+  firstName        String
+  lastName         String
+  email            String      @unique
+  techSkills       TechSkill[]
+  active           Boolean     @default(true)
+}
+
+model TechSkill {
+  id                 String         @id @default(uuid())
+  creationDateTime   DateTime       @default(now())
+  lastUpdateDateTime DateTime       @default(now()) @updatedAt
+  level              TechSkillLevel @relation(fields: [levelId], references: [id])
+  levelId            String
+  technology         Technology     @relation(fields: [technologyId], references: [id])
+  technologyId       String
+  professional       Professional   @relation(fields: [professionalId], references: [id])
+  professionalId     String
+
+}
+
+model TechSkillLevel {
+  id         String      @id @default(uuid())
+  name       String      @unique
+  weight     Int
+  techSkills TechSkill[]
+}
+
+model Technology {
+  id          String               @id @default(uuid())
+  name        String
+  description String
+  techSkills  TechSkill[]
+  categories  TechnologyCategory[]
+  active      Boolean              @default(true)
+}
+
+model TechnologyCategory {
+  id           String       @id @default(uuid())
+  name         String
+  technologies Technology[]
 }
