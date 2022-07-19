@@ -122,7 +122,7 @@ async function main() {
       id: maxiProfId,
       firstName: 'Maxi',
       lastName: 'Britez',
-      email: 'some@email.com',
+      email: 'maxi@email.com',
       techSkills: {
         create: [
           {
