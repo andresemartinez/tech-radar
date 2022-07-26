@@ -13,7 +13,7 @@ const TechnologyCategoriesAdminPage: NextPageWithLayout = () => {
         <Link
           key={technologyCategory.id}
           href={{
-            pathname: '/admin/technology-category/[id]',
+            pathname: '/admin/technology/category/[id]',
             query: { id: technologyCategory.id },
           }}
         >

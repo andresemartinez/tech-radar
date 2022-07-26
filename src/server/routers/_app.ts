@@ -6,6 +6,7 @@ import superjson from 'superjson';
 import { professionalRouter } from '~/server/routers/professional';
 import { chartRouter } from '~/server/routers/chart';
 import { technologyCategoryRouter } from '~/server/routers/technology-category';
+import { techSkillLevelRouter } from './tech-skill-level';
 
 /**
  * Create your application's root router
@@ -34,6 +35,7 @@ export const appRouter = createRouter()
   })
   .merge('professional.', professionalRouter)
   .merge('chart.', chartRouter)
-  .merge('technology-category.', technologyCategoryRouter);
+  .merge('technology-category.', technologyCategoryRouter)
+  .merge('technology-skill-level.', techSkillLevelRouter);
 
 export type AppRouter = typeof appRouter;
