@@ -1,16 +1,15 @@
-import { Prisma } from "@prisma/client";
-import { prisma } from "~/server/prisma";
-import { TRPCError } from "@trpc/server";
-import { createRouter } from "~/server/createRouter";
-import { z } from "zod";
+import { Prisma } from '@prisma/client';
+import { prisma } from '~/server/prisma';
+import { TRPCError } from '@trpc/server';
+import { createRouter } from '~/server/createRouter';
+import { z } from 'zod';
 
 const defaultTechSkillLevelSelect =
   Prisma.validator<Prisma.TechSkillLevelSelect>()({
     id: true,
     name: true,
-    weight: true
+    weight: true,
   });
-
 
 export const techSkillLevelRouter = createRouter()
   .query('all', {
