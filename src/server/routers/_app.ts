@@ -33,7 +33,7 @@ export const appRouter = createRouter()
       return 'yay!';
     },
   })
-  
+
   .merge('professional.', professionalRouter)
   .merge('chart.', chartRouter)
   .merge('technology-category.', technologyCategoryRouter)

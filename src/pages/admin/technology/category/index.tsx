@@ -1,6 +1,7 @@
+import Link from 'next/link';
+import { AdminLayout } from '~/components/admin/AdminLayout';
 import { NextPageWithLayout } from '~/pages/_app';
 import { trpc } from '~/utils/trpc';
-import Link from 'next/link';
 
 const TechnologyCategoriesAdminPage: NextPageWithLayout = () => {
   const { data: technologyCategories } = trpc.useQuery([
@@ -23,5 +24,9 @@ const TechnologyCategoriesAdminPage: NextPageWithLayout = () => {
     </div>
   );
 };
+
+TechnologyCategoriesAdminPage.getLayout = (page) => (
+  <AdminLayout>{page}</AdminLayout>
+);
 
 export default TechnologyCategoriesAdminPage;

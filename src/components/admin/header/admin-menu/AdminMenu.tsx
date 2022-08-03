@@ -1,16 +1,15 @@
+import { Category, Leaderboard, Menu as MenuIcon } from '@mui/icons-material';
 import {
   Box,
-  Divider,
   IconButton,
   List,
   ListItem,
-  ListItemButton,
   ListItemIcon,
   ListItemText,
   SwipeableDrawer,
 } from '@mui/material';
-import { Mail, Menu as MenuIcon, MoveToInbox } from '@mui/icons-material';
-import React, { useState } from 'react';
+import Link from 'next/link';
+import { useState } from 'react';
 
 const AdminMenu = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -28,28 +27,28 @@ const AdminMenu = () => {
       >
         <Box sx={{ width: 250 }} role="presentation">
           <List>
-            {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <MoveToInbox /> : <Mail />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            {['All mail', 'Trash', 'Spam'].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <MoveToInbox /> : <Mail />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
+            {[
+              {
+                name: 'Categories',
+                icon: <Category />,
+                url: 'technology/category',
+              },
+              {
+                name: 'Skill Levels',
+                icon: <Leaderboard />,
+                url: 'technology/skill/level',
+              },
+            ].map(({ name, icon, url }) => (
+              <Link key={name} href={`/admin/${url}`} passHref>
+                <ListItem
+                  button
+                  component="a"
+                  onClick={() => setDrawerOpen(false)}
+                >
+                  <ListItemIcon>{icon}</ListItemIcon>
+                  <ListItemText primary={name} />
+                </ListItem>
+              </Link>
             ))}
           </List>
         </Box>

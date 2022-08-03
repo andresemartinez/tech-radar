@@ -1,9 +1,10 @@
-import { NextPageWithLayout } from '~/pages/_app';
-import { trpc } from '~/utils/trpc';
+import NextError from 'next/error';
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
+import { AdminLayout } from '~/components/admin/AdminLayout';
 import TechnologyCategoryForm from '~/components/TechnologyCategoryForm';
-import NextError from 'next/error';
+import { NextPageWithLayout } from '~/pages/_app';
+import { trpc } from '~/utils/trpc';
 
 const TechnologyCategoryAdminPage: NextPageWithLayout = () => {
   const router = useRouter();
@@ -47,5 +48,9 @@ const TechnologyCategoryAdminPage: NextPageWithLayout = () => {
     return null;
   }
 };
+
+TechnologyCategoryAdminPage.getLayout = (page) => (
+  <AdminLayout>{page}</AdminLayout>
+);
 
 export default TechnologyCategoryAdminPage;

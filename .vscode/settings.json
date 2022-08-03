@@ -15,6 +15,9 @@
     "editor.defaultFormatter": "Prisma.prisma"
   },
   "cSpell.words": [
-    "superjson"
+    "Leaderboard",
+    "superjson",
+    "Swipeable",
+    "tailwindcss"
   ]
 }

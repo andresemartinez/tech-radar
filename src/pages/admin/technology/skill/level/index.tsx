@@ -1,6 +1,7 @@
+import Link from 'next/link';
+import { AdminLayout } from '~/components/admin/AdminLayout';
 import { NextPageWithLayout } from '~/pages/_app';
 import { trpc } from '~/utils/trpc';
-import Link from 'next/link';
 
 const TechnologySkillsLevelAdminPage: NextPageWithLayout = () => {
   const { data: technologySkillsLevel } = trpc.useQuery([
@@ -23,5 +24,9 @@ const TechnologySkillsLevelAdminPage: NextPageWithLayout = () => {
     </div>
   );
 };
+
+TechnologySkillsLevelAdminPage.getLayout = (page) => (
+  <AdminLayout>{page}</AdminLayout>
+);
 
 export default TechnologySkillsLevelAdminPage;

@@ -1,8 +1,9 @@
-import { useRouter } from 'next/router';
-import { NextPageWithLayout } from '~/pages/_app';
-import { useMemo } from 'react';
-import { trpc } from '~/utils/trpc';
 import { TextField } from '@mui/material';
+import { useRouter } from 'next/router';
+import { useMemo } from 'react';
+import { AdminLayout } from '~/components/admin/AdminLayout';
+import { NextPageWithLayout } from '~/pages/_app';
+import { trpc } from '~/utils/trpc';
 
 const TechnologySkillLevelAdminPage: NextPageWithLayout = () => {
   const router = useRouter();
@@ -38,5 +39,9 @@ const TechnologySkillLevelAdminPage: NextPageWithLayout = () => {
     </form>
   );
 };
+
+TechnologySkillLevelAdminPage.getLayout = (page) => (
+  <AdminLayout>{page}</AdminLayout>
+);
 
 export default TechnologySkillLevelAdminPage;
