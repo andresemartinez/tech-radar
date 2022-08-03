@@ -13,18 +13,18 @@ generator client {
 // Next Auth --------------------------------------------------------------------------------------
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -61,12 +61,12 @@ model VerificationToken {
 
 model Professional {
   id               String      @id @default(uuid())
+  userId           String      @unique
   creationDateTime DateTime    @default(now())
-  firstName        String
-  lastName         String
-  email            String      @unique
   techSkills       TechSkill[]
   active           Boolean     @default(true)
+
+  @@index([userId])
 }
 
 model TechSkill {
@@ -79,7 +79,6 @@ model TechSkill {
   technologyId       String
   professional       Professional   @relation(fields: [professionalId], references: [id])
   professionalId     String
-
 }
 
 model TechSkillLevel {
