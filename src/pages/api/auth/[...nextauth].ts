@@ -19,4 +19,23 @@ export default NextAuth({
       return session;
     },
   },
+  events: {
+    createUser: async ({ user }) => {
+      console.info(
+        `Creating professional based on user ${JSON.stringify(user)}`,
+      );
+
+      const professional = await prisma.professional.create({
+        data: {
+          userId: user.id,
+        },
+      });
+
+      console.info(
+        `Successfully created professional ${JSON.stringify(
+          professional,
+        )} based on user ${JSON.stringify(user)}`,
+      );
+    },
+  },
 });

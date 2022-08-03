@@ -52,4 +52,24 @@ export const professionalRouter = createRouter()
       }
       return professional;
     },
+  })
+  .query('byUserId', {
+    input: z.object({
+      userId: z.string(),
+    }),
+    async resolve({ input }) {
+      const { userId } = input;
+      const professional = await prisma.professional.findUnique({
+        where: { userId },
+        select: defaultProfessionalSelect,
+      });
+
+      if (!professional) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: `No professional for user '${userId}'`,
+        });
+      }
+      return professional;
+    },
   });
