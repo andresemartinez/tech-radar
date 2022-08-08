@@ -2,21 +2,23 @@ import { prisma } from '~/server/prisma';
 import { Prisma } from '@prisma/client';
 
 export async function techRadarDataset() {
+  const skillSelect = Prisma.validator<Prisma.TechSkillSelect>()({
+    technology: {
+      select: {
+        name: true,
+      },
+    },
+    level: {
+      select: {
+        id: true,
+        name: true,
+        weight: true,
+      },
+    },
+  });
+
   const skills = await prisma.techSkill.findMany({
-    select: Prisma.validator<Prisma.TechSkillSelect>()({
-      technology: {
-        select: {
-          name: true,
-        },
-      },
-      level: {
-        select: {
-          id: true,
-          name: true,
-          weight: true,
-        },
-      },
-    }),
+    select: skillSelect,
   });
 
   const skillsLabels = skills

@@ -1,6 +1,13 @@
-import { Category, Leaderboard, Menu as MenuIcon } from '@mui/icons-material';
+import {
+  Category as CategoryIcon,
+  Leaderboard as LeaderboardIcon,
+  Menu as MenuIcon,
+  Person as PersonIcon,
+  SvgIconComponent,
+} from '@mui/icons-material';
 import {
   Box,
+  Icon,
   IconButton,
   List,
   ListItem,
@@ -8,10 +15,12 @@ import {
   ListItemText,
   SwipeableDrawer,
 } from '@mui/material';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useState } from 'react';
 
 const AdminMenu = () => {
+  const { data: session } = useSession();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
@@ -29,31 +38,58 @@ const AdminMenu = () => {
           <List>
             {[
               {
+                name: 'Me',
+                icon: PersonIcon,
+                url: `professional/${session?.user?.id}`,
+              },
+              {
                 name: 'Categories',
-                icon: <Category />,
+                icon: CategoryIcon,
                 url: 'technology/category',
               },
               {
                 name: 'Skill Levels',
-                icon: <Leaderboard />,
+                icon: LeaderboardIcon,
                 url: 'technology/skill/level',
               },
             ].map(({ name, icon, url }) => (
-              <Link key={name} href={`/admin/${url}`} passHref>
-                <ListItem
-                  button
-                  component="a"
-                  onClick={() => setDrawerOpen(false)}
-                >
-                  <ListItemIcon>{icon}</ListItemIcon>
-                  <ListItemText primary={name} />
-                </ListItem>
-              </Link>
+              <AdminMenuItem
+                key={name}
+                name={name}
+                icon={icon}
+                url={url}
+                onClick={() => setDrawerOpen(false)}
+              />
             ))}
           </List>
         </Box>
       </SwipeableDrawer>
     </>
+  );
+};
+
+type AdminMenuItemProps = {
+  name: string;
+  icon: SvgIconComponent;
+  url: string;
+  onClick: () => void;
+};
+
+const AdminMenuItem = ({
+  name,
+  icon: Icon,
+  url,
+  onClick,
+}: AdminMenuItemProps) => {
+  return (
+    <Link key={name} href={`/admin/${url}`} passHref>
+      <ListItem button component="a" onClick={onClick}>
+        <ListItemIcon>
+          <Icon />
+        </ListItemIcon>
+        <ListItemText primary={name} />
+      </ListItem>
+    </Link>
   );
 };
 

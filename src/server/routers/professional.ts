@@ -7,10 +7,6 @@ import { TRPCError } from '@trpc/server';
 const defaultProfessionalSelect = Prisma.validator<Prisma.ProfessionalSelect>()(
   {
     id: true,
-    creationDateTime: true,
-    firstName: true,
-    lastName: true,
-    email: true,
     techSkills: {
       select: {
         id: true,
