@@ -1,8 +1,8 @@
 import { Prisma } from '@prisma/client';
+import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
 import { createRouter } from '~/server/createRouter';
 import { prisma } from '~/server/prisma';
-import { z } from 'zod';
-import { TRPCError } from '@trpc/server';
 
 const defaultProfessionalSelect = Prisma.validator<Prisma.ProfessionalSelect>()(
   {
@@ -67,5 +67,49 @@ export const professionalRouter = createRouter()
         });
       }
       return professional;
+    },
+  })
+  .mutation('addTechSkills', {
+    input: z.object({
+      id: z.string(),
+      skills: z.array(
+        z.object({
+          levelId: z.string(),
+          technologyId: z.string(),
+        }),
+      ),
+    }),
+    async resolve({ input }) {
+      const { id, skills } = input;
+
+      const professional = await prisma.professional.findFirst({
+        select: {
+          techSkills: {
+            select: {
+              levelId: true,
+              technologyId: true,
+            },
+          },
+        },
+        where: { id },
+      });
+
+      const currentSkills = professional?.techSkills ?? [];
+
+      await prisma.professional.update({
+        where: { id },
+        data: {
+          techSkills: {
+            createMany: {
+              data: skills.filter((newSkill) =>
+                currentSkills.every(
+                  (currentSkill) =>
+                    newSkill.technologyId !== currentSkill.technologyId,
+                ),
+              ),
+            },
+          },
+        },
+      });
     },
   });

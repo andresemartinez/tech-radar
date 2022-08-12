@@ -7,6 +7,7 @@ import { professionalRouter } from '~/server/routers/professional';
 import { chartRouter } from '~/server/routers/chart';
 import { technologyCategoryRouter } from '~/server/routers/technology-category';
 import { techSkillLevelRouter } from './tech-skill-level';
+import { technologyRouter } from './technology';
 
 /**
  * Create your application's root router
@@ -36,6 +37,7 @@ export const appRouter = createRouter()
 
   .merge('professional.', professionalRouter)
   .merge('chart.', chartRouter)
+  .merge('technology.', technologyRouter)
   .merge('technology-category.', technologyCategoryRouter)
   .merge('technology-skill-level.', techSkillLevelRouter);
 
