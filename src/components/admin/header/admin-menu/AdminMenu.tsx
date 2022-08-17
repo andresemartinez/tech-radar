@@ -7,7 +7,6 @@ import {
 } from '@mui/icons-material';
 import {
   Box,
-  Icon,
   IconButton,
   List,
   ListItem,
@@ -15,12 +14,10 @@ import {
   ListItemText,
   SwipeableDrawer,
 } from '@mui/material';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useState } from 'react';
 
 const AdminMenu = () => {
-  const { data: session } = useSession();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
@@ -40,7 +37,7 @@ const AdminMenu = () => {
               {
                 name: 'Me',
                 icon: PersonIcon,
-                url: `professional/${session?.user?.id}`,
+                url: `me`,
               },
               {
                 name: 'Categories',

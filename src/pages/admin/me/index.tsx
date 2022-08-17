@@ -1,7 +1,7 @@
-import { Button, MenuItem, Modal, Select } from '@mui/material';
+import { Close as CloseIcon } from '@mui/icons-material';
+import { Button, IconButton, MenuItem, Modal, Select } from '@mui/material';
 import { Technology, TechSkillLevel } from '@prisma/client';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
 import { useCallback, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { AdminLayout } from '~/components/admin/AdminLayout';
@@ -9,16 +9,11 @@ import { NextPageWithLayout } from '~/pages/_app';
 import { trpc } from '~/utils/trpc';
 
 const ProfessionalAdminPage: NextPageWithLayout = () => {
-  const router = useRouter();
   const trpcUtils = trpc.useContext();
-  const id = useMemo(
-    () => (typeof router.query.id === 'string' ? router.query.id : ''),
-    [router.query.id],
-  );
   const { data: session } = useSession();
   const { data: professional } = trpc.useQuery([
     'professional.byUserId',
-    { userId: id },
+    { userId: session?.user?.id ?? '' },
   ]);
 
   const user = useMemo(() => session?.user, [session?.user]);
@@ -32,6 +27,9 @@ const ProfessionalAdminPage: NextPageWithLayout = () => {
           professionalId={professional.id}
           skills={professional.techSkills}
           onSkillAdded={() =>
+            trpcUtils.invalidateQueries(['professional.byUserId'])
+          }
+          onSkillDeleted={() =>
             trpcUtils.invalidateQueries(['professional.byUserId'])
           }
         />
@@ -68,22 +66,32 @@ type ProfessionalSkillsProps = {
     technology: Technology;
   }[];
   onSkillAdded: () => void;
+  onSkillDeleted: () => void;
 };
 
 const ProfessionalSkills = ({
   professionalId,
   skills,
   onSkillAdded,
+  onSkillDeleted,
 }: ProfessionalSkillsProps) => {
+  const removeSkills = trpc.useMutation('tech-skill.removeTechSkills', {
+    async onSuccess() {
+      onSkillDeleted();
+    },
+  });
+
   return (
     <div className="flex flex-col">
       <span className="font-bold">Skills</span>
       {skills.length <= 0 && <span>No skills registered yet!</span>}
       {skills.map((skill) => (
-        <div key={skill.id} className="flex flex-row">
-          <span className="pr-2">{skill.technology.name}</span>
-          <span>{skill.level.name}</span>
-        </div>
+        <TechSkill
+          key={skill.id}
+          name={skill.technology.name}
+          level={skill.level.name}
+          onDelete={() => removeSkills.mutateAsync({ id: skill.id })}
+        />
       ))}
       <div className="mt-3">
         <AddSkillButton
@@ -91,6 +99,24 @@ const ProfessionalSkills = ({
           onSkillAdded={onSkillAdded}
         />
       </div>
+    </div>
+  );
+};
+
+type TechSkillProps = {
+  name: string;
+  level: string;
+  onDelete: () => void;
+};
+
+const TechSkill = ({ name, level, onDelete }: TechSkillProps) => {
+  return (
+    <div className="flex flex-row items-center">
+      <span className="pr-2 h-min">{name}</span>
+      <span className="pr-4 h-min">{level}</span>
+      <IconButton onClick={onDelete} size="small">
+        <CloseIcon />
+      </IconButton>
     </div>
   );
 };
