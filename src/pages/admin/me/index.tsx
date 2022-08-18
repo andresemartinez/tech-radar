@@ -1,9 +1,17 @@
 import { Close as CloseIcon, Edit as EditIcon } from '@mui/icons-material';
-import { Button, IconButton, MenuItem, Modal, Select } from '@mui/material';
+import {
+  Button,
+  IconButton,
+  MenuItem,
+  Modal,
+  Select,
+  TextField,
+} from '@mui/material';
 import { useSession } from 'next-auth/react';
-import { useCallback, useMemo, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { AdminLayout } from '~/components/admin/AdminLayout';
+import Autocomplete from '~/components/form/Autocomplete';
 import { NextPageWithLayout } from '~/pages/_app';
 import { trpc } from '~/utils/trpc';
 
@@ -268,13 +276,6 @@ const AddSkillButton = ({
     },
   });
 
-  const { control, handleSubmit } = useForm({
-    defaultValues: {
-      tech: '',
-      level: '',
-    },
-  });
-
   const onEdit = useCallback(
     (skills: { levelId: string; technologyId: string }[]) => {
       addSkills.mutateAsync({ id: professionalId, skills });
@@ -287,61 +288,122 @@ const AddSkillButton = ({
       <Button onClick={() => setModalOpen(true)}>Add Skill</Button>
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="absolute top-[50%] left-[50%] w-[400px] px-[20px] py-[40px] bg-white">
-          <form
-            onSubmit={handleSubmit((data) => {
-              onEdit([{ technologyId: data.tech, levelId: data.level }]);
-            })}
-          >
-            <div className="flex flex-row">
-              <Controller
-                name="tech"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => (
-                  <Select
-                    className="flex-grow mr-3"
-                    {...field}
-                    variant="outlined"
-                  >
-                    {technologies?.map((tech) => (
-                      <MenuItem key={tech.id} value={tech.id}>
-                        {tech.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                )}
-              />
-
-              <Controller
-                name="level"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => (
-                  <Select
-                    className="flex-grow ml-3"
-                    {...field}
-                    variant="outlined"
-                  >
-                    {techSkillLevels?.map((level) => (
-                      <MenuItem key={level.id} value={level.id}>
-                        {level.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                )}
-              />
-            </div>
-
-            <div className="flex justify-end pt-5">
-              <Button className="pr-3" onClick={() => setModalOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">Save</Button>
-            </div>
-          </form>
+          <AddSkillForm
+            technologies={technologies ?? []}
+            levels={techSkillLevels ?? []}
+            onCancel={() => setModalOpen(false)}
+            onSubmit={(techSkills) => onEdit(techSkills)}
+          />
         </div>
       </Modal>
     </>
+  );
+};
+
+type AddSkillFormProps = {
+  technologies: { id: string; name: string }[];
+  levels: { id: string; name: string }[];
+  onCancel: () => void;
+  onSubmit: (techSkills: { technologyId: string; levelId: string }[]) => void;
+};
+
+const AddSkillForm = ({
+  technologies,
+  levels,
+  onCancel,
+  onSubmit,
+}: AddSkillFormProps) => {
+  const { control, handleSubmit } = useForm<{
+    techSkills: {
+      tech: { id: string; name: string } | null;
+      level: string;
+    }[];
+  }>();
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'techSkills',
+  });
+
+  const selectedSkills = useWatch({
+    control,
+    name: 'techSkills',
+    defaultValue: [],
+  });
+
+  useEffect(() => {
+    if (fields && fields.length <= 0 && append) {
+      append({ tech: null, level: '' });
+    }
+  }, [append, fields]);
+
+  return (
+    <form
+      onSubmit={handleSubmit((data) => {
+        onSubmit(
+          data.techSkills.map((techSkill) => ({
+            technologyId: techSkill.tech?.id ?? '',
+            levelId: techSkill.level,
+          })),
+        );
+      })}
+    >
+      {fields.map((field, index) => (
+        <div key={field.id} className="flex flex-row pb-2">
+          <Autocomplete
+            className="flex-grow mr-3"
+            name={`techSkills.${index}.tech`}
+            control={control}
+            rules={{ required: true }}
+            options={technologies}
+            getOptionLabel={(option) => option.name}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
+            filterOptions={(options) =>
+              options.filter((option) =>
+                selectedSkills.every(
+                  (selectedSkill) => option.id !== selectedSkill.tech?.id,
+                ),
+              )
+            }
+          />
+
+          <Controller
+            name={`techSkills.${index}.level`}
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+              <Select className="flex-grow ml-3" {...field} variant="outlined">
+                {levels?.map((level) => (
+                  <MenuItem key={level.id} value={level.id}>
+                    {level.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
+          />
+          <IconButton
+            disabled={(fields?.length ?? 0) <= 1}
+            onClick={() => remove(index)}
+          >
+            <CloseIcon />
+          </IconButton>
+        </div>
+      ))}
+
+      <div className="flex flex-row pt-2">
+        <Button onClick={() => append({ tech: null, level: '' })}>
+          Add Row
+        </Button>
+      </div>
+
+      <div className="flex justify-end pt-5">
+        <Button className="pr-3" onClick={onCancel}>
+          Cancel
+        </Button>
+
+        <Button type="submit">Save</Button>
+      </div>
+    </form>
   );
 };
 
