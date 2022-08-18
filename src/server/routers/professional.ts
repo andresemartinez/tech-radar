@@ -12,10 +12,23 @@ const defaultProfessionalSelect = Prisma.validator<Prisma.ProfessionalSelect>()(
         id: true,
         creationDateTime: true,
         lastUpdateDateTime: true,
-        level: true,
-        levelId: true,
-        technology: true,
-        professional: true,
+        level: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        technology: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        technology: {
+          name: 'asc',
+        },
       },
     },
   },

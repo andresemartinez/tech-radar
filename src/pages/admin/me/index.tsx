@@ -1,6 +1,5 @@
-import { Close as CloseIcon } from '@mui/icons-material';
+import { Close as CloseIcon, Edit as EditIcon } from '@mui/icons-material';
 import { Button, IconButton, MenuItem, Modal, Select } from '@mui/material';
-import { Technology, TechSkillLevel } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import { useCallback, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -27,6 +26,9 @@ const ProfessionalAdminPage: NextPageWithLayout = () => {
           professionalId={professional.id}
           skills={professional.techSkills}
           onSkillAdded={() =>
+            trpcUtils.invalidateQueries(['professional.byUserId'])
+          }
+          onSkillEdited={() =>
             trpcUtils.invalidateQueries(['professional.byUserId'])
           }
           onSkillDeleted={() =>
@@ -62,11 +64,18 @@ type ProfessionalSkillsProps = {
   professionalId: string;
   skills: {
     id: string;
-    level: TechSkillLevel;
-    technology: Technology;
+    level: {
+      id: string;
+      name: string;
+    };
+    technology: {
+      id: string;
+      name: string;
+    };
   }[];
   onSkillAdded: () => void;
   onSkillDeleted: () => void;
+  onSkillEdited: () => void;
 };
 
 const ProfessionalSkills = ({
@@ -74,13 +83,8 @@ const ProfessionalSkills = ({
   skills,
   onSkillAdded,
   onSkillDeleted,
+  onSkillEdited,
 }: ProfessionalSkillsProps) => {
-  const removeSkills = trpc.useMutation('tech-skill.removeTechSkills', {
-    async onSuccess() {
-      onSkillDeleted();
-    },
-  });
-
   return (
     <div className="flex flex-col">
       <span className="font-bold">Skills</span>
@@ -88,9 +92,9 @@ const ProfessionalSkills = ({
       {skills.map((skill) => (
         <TechSkill
           key={skill.id}
-          name={skill.technology.name}
-          level={skill.level.name}
-          onDelete={() => removeSkills.mutateAsync({ id: skill.id })}
+          skill={skill}
+          onSkillDeleted={onSkillDeleted}
+          onSkillEdited={onSkillEdited}
         />
       ))}
       <div className="mt-3">
@@ -104,20 +108,141 @@ const ProfessionalSkills = ({
 };
 
 type TechSkillProps = {
-  name: string;
-  level: string;
-  onDelete: () => void;
+  skill: {
+    id: string;
+    level: {
+      id: string;
+      name: string;
+    };
+    technology: {
+      id: string;
+      name: string;
+    };
+  };
+  onSkillDeleted: () => void;
+  onSkillEdited: () => void;
 };
 
-const TechSkill = ({ name, level, onDelete }: TechSkillProps) => {
+const TechSkill = ({
+  skill,
+  onSkillDeleted,
+  onSkillEdited,
+}: TechSkillProps) => {
   return (
     <div className="flex flex-row items-center">
-      <span className="pr-2 h-min">{name}</span>
-      <span className="pr-4 h-min">{level}</span>
-      <IconButton onClick={onDelete} size="small">
-        <CloseIcon />
-      </IconButton>
+      <span className="pr-2 h-min">{skill.technology.name}</span>
+      <span className="pr-4 h-min">{skill.level.name}</span>
+      <EditSkillButton skill={skill} onSkillEdited={onSkillEdited} />
+      <DeleteSkillButton id={skill.id} onSkillDeleted={onSkillDeleted} />
     </div>
+  );
+};
+
+type DeleteSkillButtonProps = {
+  id: string;
+  onSkillDeleted: () => void;
+};
+
+const DeleteSkillButton = ({ id, onSkillDeleted }: DeleteSkillButtonProps) => {
+  const removeSkills = trpc.useMutation('tech-skill.delete', {
+    async onSuccess() {
+      onSkillDeleted();
+    },
+  });
+
+  return (
+    <IconButton onClick={() => removeSkills.mutateAsync({ id })} size="small">
+      <CloseIcon />
+    </IconButton>
+  );
+};
+
+type EditSkillButtonProps = {
+  skill: {
+    id: string;
+    level: {
+      id: string;
+      name: string;
+    };
+    technology: {
+      id: string;
+      name: string;
+    };
+  };
+  onSkillEdited: () => void;
+};
+
+const EditSkillButton = ({ skill, onSkillEdited }: EditSkillButtonProps) => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const { data: techSkillLevels } = trpc.useQuery([
+    'technology-skill-level.all',
+  ]);
+
+  const editSkills = trpc.useMutation('tech-skill.edit', {
+    async onSuccess() {
+      setModalOpen(false);
+      onSkillEdited();
+    },
+  });
+
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      level: skill.level.id,
+    },
+  });
+
+  const onEdit = useCallback(
+    ({ levelId }: { levelId: string }) => {
+      editSkills.mutateAsync({ id: skill.id, data: { levelId } });
+    },
+    [editSkills, skill.id],
+  );
+
+  return (
+    <>
+      <IconButton onClick={() => setModalOpen(true)}>
+        <EditIcon />
+      </IconButton>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <div className="absolute top-[50%] left-[50%] w-[400px] px-[20px] py-[40px] bg-white">
+          <form
+            onSubmit={handleSubmit((data) => {
+              onEdit({ levelId: data.level });
+            })}
+          >
+            <div className="flex flex-row">
+              <span className="mr-3">{skill.technology.name}</span>
+
+              <Controller
+                name="level"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Select
+                    className="flex-grow ml-3"
+                    {...field}
+                    variant="outlined"
+                  >
+                    {techSkillLevels?.map((level) => (
+                      <MenuItem key={level.id} value={level.id}>
+                        {level.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+            </div>
+
+            <div className="flex justify-end pt-5">
+              <Button className="pr-3" onClick={() => setModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">Save</Button>
+            </div>
+          </form>
+        </div>
+      </Modal>
+    </>
   );
 };
 
@@ -208,6 +333,9 @@ const AddSkillButton = ({
             </div>
 
             <div className="flex justify-end pt-5">
+              <Button className="pr-3" onClick={() => setModalOpen(false)}>
+                Cancel
+              </Button>
               <Button type="submit">Save</Button>
             </div>
           </form>
