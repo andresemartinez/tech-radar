@@ -13,14 +13,15 @@ const Autocomplete = <
 >({
   className,
   control,
-  rules,
+  required = false,
   options,
   getOptionLabel,
   isOptionEqualToValue,
   filterOptions,
   name,
-}: UseControllerProps<TFieldValues> & {
+}: Omit<UseControllerProps<TFieldValues>, 'rules'> & {
   className: string;
+  required: boolean;
   options: ReadonlyArray<T>;
   filterOptions?: (options: T[], state: FilterOptionsState<T>) => T[];
   getOptionLabel?: (
@@ -32,7 +33,7 @@ const Autocomplete = <
     <Controller
       name={name}
       control={control}
-      rules={rules}
+      rules={{ required }}
       render={({ field }) => (
         <MuiAutocomplete
           className={className}

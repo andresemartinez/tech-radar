@@ -1,12 +1,5 @@
 import { Close as CloseIcon, Edit as EditIcon } from '@mui/icons-material';
-import {
-  Button,
-  IconButton,
-  MenuItem,
-  Modal,
-  Select,
-  TextField,
-} from '@mui/material';
+import { Button, IconButton, MenuItem, Modal, Select } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
@@ -141,17 +134,30 @@ const TechSkill = ({
       <span className="pr-2 h-min">{skill.technology.name}</span>
       <span className="pr-4 h-min">{skill.level.name}</span>
       <EditSkillButton skill={skill} onSkillEdited={onSkillEdited} />
-      <DeleteSkillButton id={skill.id} onSkillDeleted={onSkillDeleted} />
+      <DeleteSkillButton
+        id={skill.id}
+        technology={skill.technology.name}
+        level={skill.level.name}
+        onSkillDeleted={onSkillDeleted}
+      />
     </div>
   );
 };
 
 type DeleteSkillButtonProps = {
   id: string;
+  technology: string;
+  level: string;
   onSkillDeleted: () => void;
 };
 
-const DeleteSkillButton = ({ id, onSkillDeleted }: DeleteSkillButtonProps) => {
+const DeleteSkillButton = ({
+  id,
+  technology,
+  level,
+  onSkillDeleted,
+}: DeleteSkillButtonProps) => {
+  const [modalOpen, setModalOpen] = useState(false);
   const removeSkills = trpc.useMutation('tech-skill.delete', {
     async onSuccess() {
       onSkillDeleted();
@@ -159,9 +165,38 @@ const DeleteSkillButton = ({ id, onSkillDeleted }: DeleteSkillButtonProps) => {
   });
 
   return (
-    <IconButton onClick={() => removeSkills.mutateAsync({ id })} size="small">
-      <CloseIcon />
-    </IconButton>
+    <>
+      <IconButton onClick={() => setModalOpen(true)} size="small">
+        <CloseIcon />
+      </IconButton>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[400px] px-[20px] rounded-md bg-white">
+          <div className="flex py-4">
+            <span className="text-lg font-bold">
+              {technology} - {level}
+            </span>
+          </div>
+
+          <div className="flex justify-center py-2">
+            <span>Are you sure you want to delete this skill?</span>
+          </div>
+
+          <div className="flex justify-end pt-4 pb-2">
+            <Button className="pr-3" onClick={() => setModalOpen(false)}>
+              No
+            </Button>
+            <Button
+              onClick={() => {
+                removeSkills.mutateAsync({ id });
+                setModalOpen(false);
+              }}
+            >
+              Yes
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    </>
   );
 };
 
@@ -212,7 +247,7 @@ const EditSkillButton = ({ skill, onSkillEdited }: EditSkillButtonProps) => {
         <EditIcon />
       </IconButton>
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-        <div className="absolute top-[50%] left-[50%] w-[400px] px-[20px] py-[40px] bg-white">
+        <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[400px] px-[20px] py-[40px] bg-white">
           <form
             onSubmit={handleSubmit((data) => {
               onEdit({ levelId: data.level });
@@ -287,7 +322,7 @@ const AddSkillButton = ({
     <>
       <Button onClick={() => setModalOpen(true)}>Add Skill</Button>
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-        <div className="absolute top-[50%] left-[50%] w-[400px] px-[20px] py-[40px] bg-white">
+        <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[600px] px-[20px] py-[40px] rounded-md bg-white">
           <AddSkillForm
             technologies={technologies ?? []}
             levels={techSkillLevels ?? []}
@@ -351,10 +386,10 @@ const AddSkillForm = ({
       {fields.map((field, index) => (
         <div key={field.id} className="flex flex-row pb-2">
           <Autocomplete
-            className="flex-grow mr-3"
+            className="flex-grow basis-1 mr-3"
             name={`techSkills.${index}.tech`}
             control={control}
-            rules={{ required: true }}
+            required
             options={technologies}
             getOptionLabel={(option) => option.name}
             isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -372,7 +407,11 @@ const AddSkillForm = ({
             control={control}
             rules={{ required: true }}
             render={({ field }) => (
-              <Select className="flex-grow ml-3" {...field} variant="outlined">
+              <Select
+                className="flex-grow basis-1 ml-3"
+                {...field}
+                variant="outlined"
+              >
                 {levels?.map((level) => (
                   <MenuItem key={level.id} value={level.id}>
                     {level.name}
@@ -381,7 +420,9 @@ const AddSkillForm = ({
               </Select>
             )}
           />
+
           <IconButton
+            className="ml-2"
             disabled={(fields?.length ?? 0) <= 1}
             onClick={() => remove(index)}
           >
@@ -391,7 +432,10 @@ const AddSkillForm = ({
       ))}
 
       <div className="flex flex-row pt-2">
-        <Button onClick={() => append({ tech: null, level: '' })}>
+        <Button
+          disabled={!selectedSkills.every((skill) => skill.tech && skill.level)}
+          onClick={() => append({ tech: null, level: '' })}
+        >
           Add Row
         </Button>
       </div>
