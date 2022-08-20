@@ -79,6 +79,8 @@ model TechSkill {
   technologyId       String
   professional       Professional   @relation(fields: [professionalId], references: [id])
   professionalId     String
+
+  @@unique([levelId, technologyId, professionalId])
 }
 
 model TechSkillLevel {
@@ -86,6 +88,7 @@ model TechSkillLevel {
   name       String      @unique
   weight     Int
   techSkills TechSkill[]
+  active     Boolean     @default(true)
 }
 
 model Technology {
@@ -101,4 +104,5 @@ model TechnologyCategory {
   id           String       @id @default(uuid())
   name         String
   technologies Technology[]
+  active       Boolean      @default(true)
 }

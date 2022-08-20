@@ -7,6 +7,7 @@ import { AdminLayout } from '~/components/admin/AdminLayout';
 import Autocomplete from '~/components/form/Autocomplete';
 import { NextPageWithLayout } from '~/pages/_app';
 import { trpc } from '~/utils/trpc';
+import { Radar } from 'react-chartjs-2';
 
 const ProfessionalAdminPage: NextPageWithLayout = () => {
   const trpcUtils = trpc.useContext();
@@ -20,21 +21,27 @@ const ProfessionalAdminPage: NextPageWithLayout = () => {
 
   return (
     <div className="flex flex-col px-5">
-      {user && <UserInfo name={user.name} email={user.email} />}
+      <div className="flex flex-row justify-between">
+        {user && <UserInfo name={user.name} email={user.email} />}
+        {professional && <ProfessionalRadar id={professional.id} size={300} />}
+      </div>
       <Divider />
       {professional && (
         <ProfessionalSkills
           professionalId={professional.id}
           skills={professional.techSkills}
-          onSkillAdded={() =>
-            trpcUtils.invalidateQueries(['professional.byUserId'])
-          }
-          onSkillEdited={() =>
-            trpcUtils.invalidateQueries(['professional.byUserId'])
-          }
-          onSkillDeleted={() =>
-            trpcUtils.invalidateQueries(['professional.byUserId'])
-          }
+          onSkillAdded={() => {
+            trpcUtils.invalidateQueries(['professional.byUserId']);
+            trpcUtils.invalidateQueries(['chart.tech-radar.byProfessional']);
+          }}
+          onSkillEdited={() => {
+            trpcUtils.invalidateQueries(['professional.byUserId']);
+            trpcUtils.invalidateQueries(['chart.tech-radar.byProfessional']);
+          }}
+          onSkillDeleted={() => {
+            trpcUtils.invalidateQueries(['professional.byUserId']);
+            trpcUtils.invalidateQueries(['chart.tech-radar.byProfessional']);
+          }}
         />
       )}
     </div>
@@ -453,6 +460,24 @@ const AddSkillForm = ({
 
 const Divider = () => {
   return <div className="h-[2px] my-5 bg-gray-600"></div>;
+};
+
+type ProfessionalRadarProps = {
+  id: string;
+  size: number;
+};
+
+const ProfessionalRadar = ({ id, size }: ProfessionalRadarProps) => {
+  const { data: techRadarDataset } = trpc.useQuery([
+    'chart.tech-radar.byProfessional',
+    { id },
+  ]);
+
+  return (
+    <div className={`h-[${size}px] w-[${size}px]`}>
+      <Radar data={techRadarDataset ?? { labels: [], datasets: [] }} />
+    </div>
+  );
 };
 
 ProfessionalAdminPage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;
