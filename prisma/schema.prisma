@@ -80,7 +80,7 @@ model TechSkill {
   professional       Professional   @relation(fields: [professionalId], references: [id])
   professionalId     String
 
-  @@unique([levelId, technologyId, professionalId])
+  @@unique([technologyId, professionalId])
 }
 
 model TechSkillLevel {

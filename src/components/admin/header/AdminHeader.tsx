@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react';
 import React from 'react';
 import AdminMenu from '~/components/admin/header/admin-menu/AdminMenu';
 import UserInfoMenu from '~/components/admin/header/user-info-menu/UserInfoMenu';
-import LoginButton from '~/components/login-button/LoginButton';
+import LoginButton from '~/components/LoginButton';
 
 const AdminHeader = () => {
   const { status } = useSession();

@@ -1,36 +1,21 @@
 import { Button, Menu, MenuItem } from '@mui/material';
 import { signOut, useSession } from 'next-auth/react';
-import React, { useCallback, useState } from 'react';
+import { useRef, useState } from 'react';
 
 const UserInfoMenu = () => {
   const { data: session } = useSession();
-  const [menuAnchorElement, setMenuAnchorElement] =
-    useState<null | HTMLElement>(null);
-
-  const handleMenuButtonClick = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>) => {
-      if (menuAnchorElement) {
-        setMenuAnchorElement(null);
-      } else {
-        setMenuAnchorElement(event.currentTarget);
-      }
-    },
-    [menuAnchorElement],
-  );
-
-  const handleMenuCloseClick = useCallback(() => {
-    setMenuAnchorElement(null);
-  }, []);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <>
-      <Button onClick={handleMenuButtonClick}>
+      <Button ref={buttonRef} onClick={() => setMenuOpen(true)}>
         Hola, {session?.user?.name}!
       </Button>
       <Menu
-        anchorEl={menuAnchorElement}
-        open={!!menuAnchorElement}
-        onClose={handleMenuCloseClick}
+        anchorEl={buttonRef.current}
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
       >
         <MenuItem onClick={() => signOut()}>Cerrar sesión</MenuItem>
       </Menu>

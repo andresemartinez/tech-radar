@@ -2,7 +2,7 @@ import { createRouter } from '~/server/createRouter';
 import {
   professionalTechRadarDataset as professionalTechRadar,
   techRadarDataset as techRadar,
-} from '~/server/services/tech-radar.service';
+} from '~/server/services/tech-radar';
 import { z } from 'zod';
 
 export const chartRouter = createRouter()
