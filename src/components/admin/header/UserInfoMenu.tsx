@@ -9,15 +9,16 @@ const UserInfoMenu = () => {
 
   return (
     <>
-      <Button ref={buttonRef} onClick={() => setMenuOpen(true)}>
-        Hola, {session?.user?.name}!
+      <Button ref={buttonRef} onClick={() => setMenuOpen(!menuOpen)}>
+        Hello, {session?.user?.name}!
       </Button>
       <Menu
         anchorEl={buttonRef.current}
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
+        PaperProps={{ style: { width: buttonRef?.current?.offsetWidth } }}
       >
-        <MenuItem onClick={() => signOut()}>Cerrar sesión</MenuItem>
+        <MenuItem onClick={() => signOut()}>Log out</MenuItem>
       </Menu>
     </>
   );

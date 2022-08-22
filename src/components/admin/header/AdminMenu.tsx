@@ -3,6 +3,7 @@ import {
   Leaderboard as LeaderboardIcon,
   Menu as MenuIcon,
   Person as PersonIcon,
+  Close as CloseIcon,
   SvgIconComponent,
 } from '@mui/icons-material';
 import {
@@ -31,13 +32,18 @@ const AdminMenu = () => {
         onOpen={() => setDrawerOpen(true)}
         onClose={() => setDrawerOpen(false)}
       >
-        <Box sx={{ width: 250 }} role="presentation">
+        <div className="w-drawer">
+          <div className="flex flex-row justify-end items-center h-header px-2">
+            <IconButton onClick={() => setDrawerOpen(false)}>
+              <CloseIcon />
+            </IconButton>
+          </div>
           <List>
             {[
               {
                 name: 'Me',
                 icon: PersonIcon,
-                url: `me`,
+                url: 'me',
               },
               {
                 name: 'Categories',
@@ -59,7 +65,7 @@ const AdminMenu = () => {
               />
             ))}
           </List>
-        </Box>
+        </div>
       </SwipeableDrawer>
     </>
   );
