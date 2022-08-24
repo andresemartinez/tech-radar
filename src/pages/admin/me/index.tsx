@@ -7,6 +7,7 @@ import { AdminLayout } from '~/components/admin/AdminLayout';
 import Autocomplete from '~/components/form/Autocomplete';
 import Select from '~/components/form/Select';
 import SelectOption from '~/components/form/SelectOption';
+import TextInput from '~/components/form/TextInput';
 import Modal from '~/components/Modal';
 import ProfessionalTechRadar from '~/components/ProfessionalTechRadar';
 import { NextPageWithLayout } from '~/pages/_app';
@@ -25,7 +26,7 @@ const ProfessionalAdminPage: NextPageWithLayout = () => {
   return (
     <div className="flex flex-col px-5">
       <div className="flex flex-row justify-between">
-        {user && <UserInfo name={user.name} email={user.email} />}
+        {user && <UserInfo id={user.id} name={user.name} email={user.email} />}
         {professional && (
           <ProfessionalTechRadar id={professional.id} size={300} />
         )}
@@ -54,22 +55,77 @@ const ProfessionalAdminPage: NextPageWithLayout = () => {
 };
 
 type UserInfoProps = {
+  id?: string | null;
   name?: string | null;
   email?: string | null;
 };
 
-const UserInfo = ({ name, email }: UserInfoProps) => {
+const UserInfo = ({ id, name, email }: UserInfoProps) => {
   return (
     <div className="flex flex-col">
       <div className="pb-3">
         <span className="font-bold">Name: </span>
         <span>{name}</span>
+        {id && name && <EditUserInfoButton id={id} name={name} />}
       </div>
       <div>
         <span className="font-bold">E-mail: </span>
         <span>{email}</span>
       </div>
     </div>
+  );
+};
+
+type EditUserInfoButtonProps = {
+  id: string;
+  name: string;
+};
+
+const EditUserInfoButton = ({ id, name }: EditUserInfoButtonProps) => {
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const editUserInfo = trpc.useMutation('user.edit', {
+    async onSuccess() {
+      setModalOpen(false);
+
+      // This is the only way I found to refresh the user in the session context
+      const event = new Event('visibilitychange');
+      document.dispatchEvent(event);
+    },
+  });
+
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      name,
+    },
+  });
+
+  return (
+    <>
+      <IconButton onClick={() => setModalOpen(true)}>
+        <EditIcon />
+      </IconButton>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <div className="w-[400px] px-[20px] py-[40px]">
+          <form
+            onSubmit={handleSubmit((data) => {
+              editUserInfo.mutateAsync({ id, data: { name: data.name } });
+            })}
+          >
+            <div className="flex flex-row">
+              <TextInput name="name" control={control} required />
+            </div>
+
+            <div className="flex justify-end pt-5">
+              <Button className="pr-3" onClick={() => setModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">Save</Button>
+            </div>
+          </form>
+        </div>
+      </Modal>
+    </>
   );
 };
 

@@ -1,14 +1,15 @@
 /**
  * This file contains the root router of your tRPC-backend
  */
-import { createRouter } from '../createRouter';
 import superjson from 'superjson';
-import { professionalRouter } from '~/server/routers/professional';
 import { chartRouter } from '~/server/routers/chart';
+import { professionalRouter } from '~/server/routers/professional';
 import { technologyCategoryRouter } from '~/server/routers/technology-category';
+import { createRouter } from '../createRouter';
+import { techSkillRouter } from './tech-skill';
 import { techSkillLevelRouter } from './tech-skill-level';
 import { technologyRouter } from './technology';
-import { techSkillRouter } from './tech-skill';
+import { userRouter } from './user';
 
 /**
  * Create your application's root router
@@ -35,7 +36,7 @@ export const appRouter = createRouter()
       return 'yay!';
     },
   })
-
+  .merge('user.', userRouter)
   .merge('professional.', professionalRouter)
   .merge('chart.', chartRouter)
   .merge('technology.', technologyRouter)
