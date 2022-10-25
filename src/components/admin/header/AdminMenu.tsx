@@ -8,7 +8,6 @@ import {
   SvgIconComponent,
 } from '@mui/icons-material';
 import {
-  Box,
   IconButton,
   List,
   ListItem,

@@ -6,9 +6,11 @@ const TextInput = <TFieldValues extends FieldValues = FieldValues>({
   control,
   required = false,
   name,
+  label,
 }: Omit<UseControllerProps<TFieldValues>, 'rules'> & {
   className?: string;
   required?: boolean;
+  label?: React.ReactNode;
 }) => {
   return (
     <Controller
@@ -16,7 +18,12 @@ const TextInput = <TFieldValues extends FieldValues = FieldValues>({
       control={control}
       rules={{ required }}
       render={({ field }) => (
-        <TextField className={className} {...field} variant="outlined" />
+        <TextField
+          className={className}
+          {...field}
+          variant="outlined"
+          label={label}
+        />
       )}
     />
   );
