@@ -2,6 +2,7 @@ import {
   Category as CategoryIcon,
   Leaderboard as LeaderboardIcon,
   Menu as MenuIcon,
+  Computer as ComputerIcon,
   Person as PersonIcon,
   Close as CloseIcon,
   SvgIconComponent,
@@ -44,6 +45,11 @@ const AdminMenu = () => {
                 name: 'Me',
                 icon: PersonIcon,
                 url: 'me',
+              },
+              {
+                name: 'Technologies',
+                icon: ComputerIcon,
+                url: 'technology',
               },
               {
                 name: 'Categories',

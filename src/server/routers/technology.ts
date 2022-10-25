@@ -35,4 +35,20 @@ export const technologyRouter = createRouter()
       }
       return techSkillLevel;
     },
+  })
+  .mutation('edit', {
+    input: z.object({
+      id: z.string().uuid(),
+      data: z.object({
+        name: z.string().trim().min(1),
+      }),
+    }),
+    async resolve({ input }) {
+      const { id, data } = input;
+      return await prisma.technologyCategory.update({
+        where: { id },
+        data,
+        select: defaultTechnologySelect,
+      });
+    },
   });
