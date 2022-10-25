@@ -18,7 +18,6 @@ const TechnologyAdminPage: NextPageWithLayout = () => {
       {technologies?.map((technology) => (
         <div key={technology.id} className="flex flex-row">
           <Link
-            key={technology.id}
             href={{
               pathname: '/admin/technology/[id]',
               query: { id: technology.id },
@@ -55,7 +54,7 @@ type AddTechButtonProps = {
   onTechAdded: () => void;
 };
 
-const AddTechButton = ({ onTechAdded: onTechAdded }: AddTechButtonProps) => {
+const AddTechButton = ({ onTechAdded }: AddTechButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
 
   const addTechnology = trpc.useMutation('technology.create', {

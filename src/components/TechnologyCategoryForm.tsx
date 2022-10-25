@@ -1,6 +1,7 @@
-import { Button, TextField } from '@mui/material';
+import { Button } from '@mui/material';
 import { inferQueryResponse } from '~/pages/api/trpc/[trpc]';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import TextInput from '../components/form/TextInput';
 
 type TechnologyCategory = inferQueryResponse<'technology-category.byId'>;
 
@@ -28,14 +29,23 @@ const TechnologyCategoryForm = ({
         });
       })}
     >
-      <Controller
-        name="name"
-        control={control}
-        rules={{ required: true }}
-        render={({ field }) => <TextField {...field} variant="outlined" />}
-      />
+      <div className="flex flex-col">
+        <div>
+          <TextInput
+            className="ml-2 my-2"
+            name="name"
+            label="Name"
+            control={control}
+            required
+          />
+        </div>
 
-      <Button type="submit">Save</Button>
+        <div>
+          <Button className="ml-2" type="submit">
+            Save
+          </Button>
+        </div>
+      </div>
     </form>
   );
 };

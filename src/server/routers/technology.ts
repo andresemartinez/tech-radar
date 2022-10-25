@@ -44,7 +44,8 @@ export const technologyRouter = createRouter()
     input: z.object({
       id: z.string().uuid(),
       data: z.object({
-        name: z.string().trim().min(1),
+        name: z.string().trim().min(1).optional(),
+        description: z.string().trim().min(1).optional(),
       }),
     }),
     async resolve({ input }) {

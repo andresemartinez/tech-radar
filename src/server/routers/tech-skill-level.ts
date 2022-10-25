@@ -16,6 +16,7 @@ export const techSkillLevelRouter = createRouter()
     async resolve() {
       return prisma.techSkillLevel.findMany({
         select: defaultTechSkillLevelSelect,
+        where: { active: true },
       });
     },
   })
@@ -36,5 +37,52 @@ export const techSkillLevelRouter = createRouter()
         });
       }
       return techSkillLevel;
+    },
+  })
+  .mutation('edit', {
+    input: z.object({
+      id: z.string().uuid(),
+      data: z.object({
+        name: z.string().trim().min(1).optional(),
+        weight: z.number().min(0).optional(),
+      }),
+    }),
+    async resolve({ input }) {
+      const { id, data } = input;
+      return await prisma.techSkillLevel.update({
+        where: { id },
+        data,
+        select: defaultTechSkillLevelSelect,
+      });
+    },
+  })
+  .mutation('create', {
+    input: z.object({
+      data: z.object({
+        name: z.string().trim().min(1),
+        weight: z.number().min(0),
+      }),
+    }),
+    async resolve({ input }) {
+      const { data } = input;
+      return await prisma.techSkillLevel.create({
+        data,
+        select: defaultTechSkillLevelSelect,
+      });
+    },
+  })
+  .mutation('delete', {
+    input: z.object({
+      id: z.string().uuid(),
+    }),
+    async resolve({ input }) {
+      const { id } = input;
+      return await prisma.techSkillLevel.update({
+        where: { id },
+        data: {
+          active: false,
+        },
+        select: defaultTechSkillLevelSelect,
+      });
     },
   });

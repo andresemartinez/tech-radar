@@ -2,19 +2,23 @@ import { Button } from '@mui/material';
 import { inferQueryResponse } from '~/pages/api/trpc/[trpc]';
 import { useForm } from 'react-hook-form';
 import TextInput from './form/TextInput';
+import NumberInput from './form/NumberInput';
 
-type Technology = inferQueryResponse<'technology.byId'>;
+type TechnologySkillLevel = inferQueryResponse<'technology-skill-level.byId'>;
 
-type TechnologyFormProps = {
-  technology: Technology;
-  onEdit: (technologyCategory: Technology) => void;
+type TechnologySkillLevelFormProps = {
+  technologySkillLevel: TechnologySkillLevel;
+  onEdit: (technologySkillLevel: TechnologySkillLevel) => void;
 };
 
-const TechnologyForm = ({ technology, onEdit }: TechnologyFormProps) => {
+const TechnologySkillLevelForm = ({
+  technologySkillLevel,
+  onEdit,
+}: TechnologySkillLevelFormProps) => {
   const { control, handleSubmit } = useForm({
     defaultValues: {
-      name: technology.name,
-      description: technology.description,
+      name: technologySkillLevel.name,
+      weight: technologySkillLevel.weight.toString(),
     },
   });
 
@@ -22,9 +26,9 @@ const TechnologyForm = ({ technology, onEdit }: TechnologyFormProps) => {
     <form
       onSubmit={handleSubmit((data) => {
         onEdit({
-          id: technology.id,
+          id: technologySkillLevel.id,
           name: data.name,
-          description: data.description,
+          weight: Number(data.weight),
         });
       })}
     >
@@ -40,10 +44,10 @@ const TechnologyForm = ({ technology, onEdit }: TechnologyFormProps) => {
         </div>
 
         <div>
-          <TextInput
+          <NumberInput
             className="ml-2 my-2"
-            name="description"
-            label="Description"
+            name="weight"
+            label="Weight"
             control={control}
             required
           />
@@ -59,4 +63,4 @@ const TechnologyForm = ({ technology, onEdit }: TechnologyFormProps) => {
   );
 };
 
-export default TechnologyForm;
+export default TechnologySkillLevelForm;

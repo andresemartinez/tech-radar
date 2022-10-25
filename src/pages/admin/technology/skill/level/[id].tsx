@@ -1,7 +1,8 @@
-import { TextField } from '@mui/material';
+import NextError from 'next/error';
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
 import { AdminLayout } from '~/components/admin/AdminLayout';
+import TechnologySkillLevelForm from '~/components/TechnologySkillLevelForm';
 import { NextPageWithLayout } from '~/pages/_app';
 import { trpc } from '~/utils/trpc';
 
@@ -11,33 +12,47 @@ const TechnologySkillLevelAdminPage: NextPageWithLayout = () => {
     () => (typeof router.query.id === 'string' ? router.query.id : ''),
     [router.query.id],
   );
+  const trpcUtils = trpc.useContext();
+  const {
+    data: skillLevel,
+    status,
+    error,
+  } = trpc.useQuery(['technology-skill-level.byId', { id }]);
 
-  const { data: skillLevel } = trpc.useQuery([
-    'technology-skill-level.byId',
-    { id },
-  ]);
-
-  return (
-    <form>
-      <br />
-      <TextField
-        id="name"
-        name="name"
-        label="Nombre"
-        variant="outlined"
-        required
-        value={skillLevel?.name}
-      ></TextField>
-      <TextField
-        id="weight"
-        name="weight"
-        label="Peso"
-        variant="outlined"
-        required
-        value={skillLevel?.weight}
-      ></TextField>
-    </form>
+  const editTechnologySkillLevel = trpc.useMutation(
+    'technology-skill-level.edit',
+    {
+      async onSuccess() {
+        await trpcUtils.invalidateQueries(['technology-skill-level.byId']);
+      },
+    },
   );
+
+  if (status === 'success' && skillLevel) {
+    return (
+      <TechnologySkillLevelForm
+        technologySkillLevel={skillLevel}
+        onEdit={(editedSkillLevel) =>
+          editTechnologySkillLevel.mutateAsync({
+            id: editedSkillLevel.id,
+            data: {
+              name: editedSkillLevel.name,
+              weight: editedSkillLevel.weight,
+            },
+          })
+        }
+      />
+    );
+  } else if (status === 'error' && error) {
+    return (
+      <NextError
+        title={error.message}
+        statusCode={error.data?.httpStatus ?? 500}
+      />
+    );
+  } else {
+    return null;
+  }
 };
 
 TechnologySkillLevelAdminPage.getLayout = (page) => (

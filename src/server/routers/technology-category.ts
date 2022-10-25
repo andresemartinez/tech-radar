@@ -15,6 +15,7 @@ export const technologyCategoryRouter = createRouter()
     async resolve() {
       return prisma.technologyCategory.findMany({
         select: defaultTechnologyCategorySelect,
+        where: { active: true },
       });
     },
   })
@@ -49,6 +50,35 @@ export const technologyCategoryRouter = createRouter()
       return await prisma.technologyCategory.update({
         where: { id },
         data,
+        select: defaultTechnologyCategorySelect,
+      });
+    },
+  })
+  .mutation('create', {
+    input: z.object({
+      data: z.object({
+        name: z.string().trim().min(1),
+      }),
+    }),
+    async resolve({ input }) {
+      const { data } = input;
+      return await prisma.technologyCategory.create({
+        data,
+        select: defaultTechnologyCategorySelect,
+      });
+    },
+  })
+  .mutation('delete', {
+    input: z.object({
+      id: z.string().uuid(),
+    }),
+    async resolve({ input }) {
+      const { id } = input;
+      return await prisma.technologyCategory.update({
+        where: { id },
+        data: {
+          active: false,
+        },
         select: defaultTechnologyCategorySelect,
       });
     },
