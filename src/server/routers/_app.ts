@@ -8,6 +8,7 @@ import { technologyCategoryRouter } from '~/server/routers/technology-category';
 import { createRouter } from '../createRouter';
 import { techSkillRouter } from './tech-skill';
 import { techSkillLevelRouter } from './tech-skill-level';
+import { techStatsRouter } from './tech-stats';
 import { technologyRouter } from './technology';
 import { userRouter } from './user';
 
@@ -42,6 +43,7 @@ export const appRouter = createRouter()
   .merge('technology.', technologyRouter)
   .merge('technology-category.', technologyCategoryRouter)
   .merge('technology-skill-level.', techSkillLevelRouter)
-  .merge('tech-skill.', techSkillRouter);
+  .merge('tech-skill.', techSkillRouter)
+  .merge('tech-stats.', techStatsRouter);
 
 export type AppRouter = typeof appRouter;

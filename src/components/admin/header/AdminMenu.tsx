@@ -6,6 +6,7 @@ import {
   Person as PersonIcon,
   Close as CloseIcon,
   Search as SearchIcon,
+  Timeline as TimelineIcon,
   SvgIconComponent,
 } from '@mui/icons-material';
 import {
@@ -47,9 +48,14 @@ const AdminMenu = () => {
                 url: 'me',
               },
               {
-                name: 'Search',
+                name: 'Professionals Search',
                 icon: SearchIcon,
                 url: 'professional/search',
+              },
+              {
+                name: 'Tech stats',
+                icon: TimelineIcon,
+                url: 'technology/stats',
               },
               {
                 name: 'Technologies',
