@@ -17,6 +17,7 @@ export const techSkillLevelRouter = createRouter()
       return prisma.techSkillLevel.findMany({
         select: defaultTechSkillLevelSelect,
         where: { active: true },
+        orderBy: { weight: 'asc' },
       });
     },
   })
@@ -44,7 +45,7 @@ export const techSkillLevelRouter = createRouter()
       id: z.string().uuid(),
       data: z.object({
         name: z.string().trim().min(1).optional(),
-        weight: z.number().min(0).optional(),
+        weight: z.number().gte(0).optional(),
       }),
     }),
     async resolve({ input }) {
@@ -60,7 +61,7 @@ export const techSkillLevelRouter = createRouter()
     input: z.object({
       data: z.object({
         name: z.string().trim().min(1),
-        weight: z.number().min(0),
+        weight: z.number().gte(0),
       }),
     }),
     async resolve({ input }) {

@@ -49,7 +49,7 @@ const AdminMenu = () => {
               {
                 name: 'Search',
                 icon: SearchIcon,
-                url: 'search',
+                url: 'professional/search',
               },
               {
                 name: 'Technologies',
