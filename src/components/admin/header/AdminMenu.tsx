@@ -5,6 +5,7 @@ import {
   Computer as ComputerIcon,
   Person as PersonIcon,
   Close as CloseIcon,
+  Search as SearchIcon,
   SvgIconComponent,
 } from '@mui/icons-material';
 import {
@@ -44,6 +45,11 @@ const AdminMenu = () => {
                 name: 'Me',
                 icon: PersonIcon,
                 url: 'me',
+              },
+              {
+                name: 'Search',
+                icon: SearchIcon,
+                url: 'search',
               },
               {
                 name: 'Technologies',
