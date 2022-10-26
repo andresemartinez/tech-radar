@@ -42,44 +42,55 @@ const AdminMenu = () => {
           </div>
           <List>
             {[
-              {
-                name: 'Me',
-                icon: PersonIcon,
-                url: 'me',
-              },
-              {
-                name: 'Professionals Search',
-                icon: SearchIcon,
-                url: 'professional/search',
-              },
-              {
-                name: 'Tech stats',
-                icon: TimelineIcon,
-                url: 'technology/stats',
-              },
-              {
-                name: 'Technologies',
-                icon: ComputerIcon,
-                url: 'technology',
-              },
-              {
-                name: 'Categories',
-                icon: CategoryIcon,
-                url: 'technology/category',
-              },
-              {
-                name: 'Skill Levels',
-                icon: LeaderboardIcon,
-                url: 'technology/skill/level',
-              },
-            ].map(({ name, icon, url }) => (
-              <AdminMenuItem
-                key={name}
-                name={name}
-                icon={icon}
-                url={url}
-                onClick={() => setDrawerOpen(false)}
-              />
+              [
+                {
+                  name: 'Me',
+                  icon: PersonIcon,
+                  url: 'me',
+                },
+              ],
+              [
+                {
+                  name: 'Professionals Search',
+                  icon: SearchIcon,
+                  url: 'professional/search',
+                },
+                {
+                  name: 'Tech stats',
+                  icon: TimelineIcon,
+                  url: 'technology/stats',
+                },
+              ],
+              [
+                {
+                  name: 'Technologies',
+                  icon: ComputerIcon,
+                  url: 'technology',
+                },
+                {
+                  name: 'Categories',
+                  icon: CategoryIcon,
+                  url: 'technology/category',
+                },
+                {
+                  name: 'Skill Levels',
+                  icon: LeaderboardIcon,
+                  url: 'technology/skill/level',
+                },
+              ],
+            ].map((section, index) => (
+              <>
+                {index !== 0 && <AdminMenuDivider />}
+                {section.map(({ name, icon, url }) => (
+                  <AdminMenuItem
+                    key={name}
+                    name={name}
+                    icon={icon}
+                    url={url}
+                    onClick={() => setDrawerOpen(false)}
+                  />
+                ))}
+              </>
             ))}
           </List>
         </div>
@@ -111,6 +122,10 @@ const AdminMenuItem = ({
       </ListItem>
     </Link>
   );
+};
+
+const AdminMenuDivider = () => {
+  return <div className="h-[2px] mx-[16px] my-5 bg-gray-400"></div>;
 };
 
 export default AdminMenu;
