@@ -47,6 +47,7 @@ const AdminMenu = () => {
                   name: 'Me',
                   icon: PersonIcon,
                   url: 'me',
+                  onClick: () => setDrawerOpen(false),
                 },
               ],
               [
@@ -54,11 +55,13 @@ const AdminMenu = () => {
                   name: 'Professionals Search',
                   icon: SearchIcon,
                   url: 'professional/search',
+                  onClick: () => setDrawerOpen(false),
                 },
                 {
                   name: 'Tech stats',
                   icon: TimelineIcon,
                   url: 'technology/stats',
+                  onClick: () => setDrawerOpen(false),
                 },
               ],
               [
@@ -66,35 +69,60 @@ const AdminMenu = () => {
                   name: 'Technologies',
                   icon: ComputerIcon,
                   url: 'technology',
+                  onClick: () => setDrawerOpen(false),
                 },
                 {
                   name: 'Categories',
                   icon: CategoryIcon,
                   url: 'technology/category',
+                  onClick: () => setDrawerOpen(false),
                 },
                 {
                   name: 'Skill Levels',
                   icon: LeaderboardIcon,
                   url: 'technology/skill/level',
+                  onClick: () => setDrawerOpen(false),
                 },
               ],
-            ].map((section, index) => (
-              <>
-                {index !== 0 && <AdminMenuDivider />}
-                {section.map(({ name, icon, url }) => (
-                  <AdminMenuItem
-                    key={name}
-                    name={name}
-                    icon={icon}
-                    url={url}
-                    onClick={() => setDrawerOpen(false)}
-                  />
-                ))}
-              </>
+            ].map((items, index) => (
+              <AdminMenuSection
+                key={index}
+                section={{ items, id: index, index }}
+              />
             ))}
           </List>
         </div>
       </SwipeableDrawer>
+    </>
+  );
+};
+
+type AdminMenuSectionProps = {
+  section: {
+    id: number;
+    index: number;
+    items: {
+      name: string;
+      icon: SvgIconComponent;
+      url: string;
+      onClick: () => void;
+    }[];
+  };
+};
+
+const AdminMenuSection = ({ section }: AdminMenuSectionProps) => {
+  return (
+    <>
+      {section.index !== 0 && <AdminMenuDivider />}
+      {section.items.map(({ name, icon, url, onClick }) => (
+        <AdminMenuItem
+          key={name}
+          name={name}
+          icon={icon}
+          url={url}
+          onClick={onClick}
+        />
+      ))}
     </>
   );
 };

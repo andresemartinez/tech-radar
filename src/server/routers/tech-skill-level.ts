@@ -12,13 +12,13 @@ const defaultTechSkillLevelSelect =
   });
 
 export const techSkillLevelRouter = router({
-  all: publicProcedure.query(async () => {
-    return prisma.techSkillLevel.findMany({
+  all: publicProcedure.query(async () =>
+    prisma.techSkillLevel.findMany({
       select: defaultTechSkillLevelSelect,
       where: { active: true },
       orderBy: { weight: 'asc' },
-    });
-  }),
+    }),
+  ),
 
   byId: publicProcedure
     .input(

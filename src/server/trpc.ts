@@ -9,7 +9,7 @@
  */
 
 import { Context } from './context';
-import { initTRPC } from '@trpc/server';
+import { initTRPC, TRPCError } from '@trpc/server';
 import superjson from 'superjson';
 
 const t = initTRPC.context<Context>().create({
@@ -46,3 +46,16 @@ export const middleware = t.middleware;
  * @see https://trpc.io/docs/v10/merging-routers
  */
 export const mergeRouters = t.mergeRouters;
+
+// Custom procedures
+
+export const privateProcedure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.user) {
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'You are not authorized',
+    });
+  }
+
+  return next({ ctx: { user: ctx.user } });
+});

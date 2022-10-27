@@ -1,9 +1,9 @@
 import { Button } from '@mui/material';
-import { inferQueryResponse } from '~/pages/api/trpc/[trpc]';
 import { useForm } from 'react-hook-form';
+import { RouterOutput } from '~/utils/trpc';
 import TextInput from '../components/form/TextInput';
 
-type TechnologyCategory = inferQueryResponse<'technology-category.byId'>;
+type TechnologyCategory = RouterOutput['technologyCategory']['byId'];
 
 type TechnologyCategoryFormProps = {
   technologyCategory: TechnologyCategory;

@@ -6,7 +6,6 @@ import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { AdminLayout } from '~/components/admin/AdminLayout';
 import Autocomplete from '~/components/form/Autocomplete';
 import Select from '~/components/form/Select';
-import SelectOption from '~/components/form/SelectOption';
 import TextInput from '~/components/form/TextInput';
 import Modal from '~/components/Modal';
 import ProfessionalTechRadar from '~/components/ProfessionalTechRadar';
@@ -284,7 +283,7 @@ type EditSkillButtonProps = {
 
 const EditSkillButton = ({ skill, onSkillEdited }: EditSkillButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const { data: techSkillLevels } = trpc.technologySkillLevel.all.useQuery();
+  const { data: techSkillLevels } = trpc.techSkillLevel.all.useQuery();
 
   const editSkills = trpc.techSkill.edit.useMutation({
     async onSuccess() {
@@ -326,13 +325,10 @@ const EditSkillButton = ({ skill, onSkillEdited }: EditSkillButtonProps) => {
                 className="flex-grow ml-3"
                 control={control}
                 required
-              >
-                {techSkillLevels?.map((level) => (
-                  <SelectOption key={level.id} value={level.id}>
-                    {level.name}
-                  </SelectOption>
-                ))}
-              </Select>
+                options={techSkillLevels ?? []}
+                getOptionLabel={(option) => option.name}
+                getOptionValue={(option) => option.id}
+              />
             </div>
 
             <div className="flex justify-end pt-5">
@@ -359,7 +355,7 @@ const AddSkillButton = ({
 }: AddSkillButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const { data: technologies } = trpc.technology.all.useQuery();
-  const { data: techSkillLevels } = trpc.technologySkillLevel.all.useQuery();
+  const { data: techSkillLevels } = trpc.techSkillLevel.all.useQuery();
 
   const addSkills = trpc.professional.addTechSkills.useMutation({
     async onSuccess() {
@@ -464,13 +460,10 @@ const AddSkillForm = ({
             className="flex-grow ml-3"
             control={control}
             required
-          >
-            {levels?.map((level) => (
-              <SelectOption key={level.id} value={level.id}>
-                {level.name}
-              </SelectOption>
-            ))}
-          </Select>
+            options={levels}
+            getOptionLabel={(option) => option.name}
+            getOptionValue={(option) => option.id}
+          />
 
           <IconButton
             className="ml-2"

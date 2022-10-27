@@ -17,11 +17,11 @@ const TechnologySkillLevelAdminPage: NextPageWithLayout = () => {
     data: skillLevel,
     status,
     error,
-  } = trpc.technologySkillLevel.byId.useQuery({ id });
+  } = trpc.techSkillLevel.byId.useQuery({ id });
 
-  const editTechnologySkillLevel = trpc.technologySkillLevel.edit.useMutation({
+  const editTechnologySkillLevel = trpc.techSkillLevel.edit.useMutation({
     async onSuccess() {
-      await trpcUtils.technologySkillLevel.byId.invalidate();
+      await trpcUtils.techSkillLevel.byId.invalidate();
     },
   });
 

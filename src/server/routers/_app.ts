@@ -16,7 +16,7 @@ export const appRouter = router({
   chart: chartRouter,
   technology: technologyRouter,
   technologyCategory: technologyCategoryRouter,
-  technologySkillLevel: techSkillLevelRouter,
+  techSkillLevel: techSkillLevelRouter,
   techSkill: techSkillRouter,
   techStats: techStatsRouter,
 });

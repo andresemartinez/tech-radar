@@ -1,10 +1,10 @@
 import { Button } from '@mui/material';
-import { inferQueryResponse } from '~/pages/api/trpc/[trpc]';
 import { useForm } from 'react-hook-form';
-import TextInput from './form/TextInput';
+import { RouterOutput } from '~/utils/trpc';
 import NumberInput from './form/NumberInput';
+import TextInput from './form/TextInput';
 
-type TechnologySkillLevel = inferQueryResponse<'technology-skill-level.byId'>;
+type TechnologySkillLevel = RouterOutput['techSkillLevel']['byId'];
 
 type TechnologySkillLevelFormProps = {
   technologySkillLevel: TechnologySkillLevel;

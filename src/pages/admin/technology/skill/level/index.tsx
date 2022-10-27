@@ -12,8 +12,7 @@ import NumberInput from '~/components/form/NumberInput';
 
 const TechnologySkillsLevelAdminPage: NextPageWithLayout = () => {
   const trpcUtils = trpc.useContext();
-  const { data: technologySkillsLevel } =
-    trpc.technologySkillLevel.all.useQuery();
+  const { data: technologySkillsLevel } = trpc.techSkillLevel.all.useQuery();
 
   return (
     <div className="flex flex-col ml-6">
@@ -35,7 +34,7 @@ const TechnologySkillsLevelAdminPage: NextPageWithLayout = () => {
             id={technologySkillLevel.id}
             name={technologySkillLevel.name}
             onSkillLevelDeleted={() => {
-              trpcUtils.technologySkillLevel.all.invalidate();
+              trpcUtils.techSkillLevel.all.invalidate();
             }}
           />
         </div>
@@ -44,7 +43,7 @@ const TechnologySkillsLevelAdminPage: NextPageWithLayout = () => {
       <div className="mt-2">
         <AddSkillLevelButton
           onSkillLevelAdded={() => {
-            trpcUtils.technologySkillLevel.all.invalidate();
+            trpcUtils.techSkillLevel.all.invalidate();
           }}
         />
       </div>
@@ -61,7 +60,7 @@ const AddSkillLevelButton = ({
 }: AddSkillLevelButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
 
-  const addSkillLevel = trpc.technologySkillLevel.create.useMutation({
+  const addSkillLevel = trpc.techSkillLevel.create.useMutation({
     async onSuccess() {
       setModalOpen(false);
       onSkillLevelAdded();
@@ -148,7 +147,7 @@ const DeleteSkillLevelButton = ({
   onSkillLevelDeleted,
 }: DeleteSkillLevelButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const removeTech = trpc.technologySkillLevel.delete.useMutation({
+  const removeTech = trpc.techSkillLevel.delete.useMutation({
     async onSuccess() {
       onSkillLevelDeleted();
     },

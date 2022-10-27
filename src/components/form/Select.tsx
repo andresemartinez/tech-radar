@@ -1,16 +1,20 @@
-import { Select as MuiSelect } from '@mui/material';
+import { MenuItem, Select as MuiSelect } from '@mui/material';
 import { Controller, FieldValues, UseControllerProps } from 'react-hook-form';
 
-const Select = <TFieldValues extends FieldValues = FieldValues>({
+const Select = <O, TFieldValues extends FieldValues = FieldValues>({
   className,
   control,
   required = false,
   name,
-  children,
+  options,
+  getOptionLabel,
+  getOptionValue,
 }: Omit<UseControllerProps<TFieldValues>, 'rules'> & {
   className: string;
   required: boolean;
-  children: JSX.Element | JSX.Element[] | undefined;
+  options: O[];
+  getOptionLabel: (option: O) => string | JSX.Element | JSX.Element[];
+  getOptionValue: (option: O) => string | number;
 }) => {
   return (
     <Controller
@@ -19,7 +23,15 @@ const Select = <TFieldValues extends FieldValues = FieldValues>({
       rules={{ required }}
       render={({ field }) => (
         <MuiSelect className={className} {...field} variant="outlined">
-          {children}
+          {options.map((option) => {
+            const label = getOptionLabel(option);
+            const value = getOptionValue(option);
+            return (
+              <MenuItem key={value} value={value}>
+                {label}
+              </MenuItem>
+            );
+          })}
         </MuiSelect>
       )}
     />

@@ -15,7 +15,7 @@ const SearchAdminPage: NextPageWithLayout = () => {
     useState<ProfessionalsSearchQuery>();
 
   const { data: technologies } = trpc.technology.all.useQuery();
-  const { data: levels } = trpc.technologySkillLevel.all.useQuery();
+  const { data: levels } = trpc.techSkillLevel.all.useQuery();
 
   const operators = useMemo<{ id: OperationKey; name: string }[]>(
     () => [

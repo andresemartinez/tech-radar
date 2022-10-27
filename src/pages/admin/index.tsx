@@ -4,7 +4,7 @@ import { NextPageWithLayout } from '~/pages/_app';
 const AdminLoginPage: NextPageWithLayout = () => {
   return (
     <main className="flex flex-row justify-center">
-      <span>Bienvenido!</span>
+      <span>Welcome!</span>
     </main>
   );
 };
