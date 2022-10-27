@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { prisma } from '~/server/prisma';
-import { publicProcedure, router } from '~/server/trpc';
+import { privateProcedure, router } from '~/server/trpc';
 
 export const techStatsRouter = router({
-  percentage: publicProcedure
+  percentage: privateProcedure
     .input(
       z.object({
         id: z.string(),
@@ -61,7 +61,7 @@ export const techStatsRouter = router({
       };
     }),
 
-  level: publicProcedure
+  level: privateProcedure
     .input(
       z.object({
         id: z.string(),

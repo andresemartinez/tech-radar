@@ -47,9 +47,9 @@ export const middleware = t.middleware;
  */
 export const mergeRouters = t.mergeRouters;
 
-// Custom procedures
+// Custom stuff
 
-export const privateProcedure = t.procedure.use(({ ctx, next }) => {
+const authedMiddleware = t.middleware(({ ctx, next }) => {
   if (!ctx.user) {
     throw new TRPCError({
       code: 'FORBIDDEN',
@@ -59,3 +59,5 @@ export const privateProcedure = t.procedure.use(({ ctx, next }) => {
 
   return next({ ctx: { user: ctx.user } });
 });
+
+export const privateProcedure = t.procedure.use(authedMiddleware);

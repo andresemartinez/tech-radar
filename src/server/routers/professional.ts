@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { prisma } from '~/server/prisma';
-import { publicProcedure, router } from '~/server/trpc';
+import { privateProcedure, router } from '~/server/trpc';
 
 export const OperationKey = z.enum(['gte', 'lte', 'eq']);
 export type OperationKey = z.infer<typeof OperationKey>;
@@ -50,13 +50,13 @@ const defaultProfessionalSelect = Prisma.validator<Prisma.ProfessionalSelect>()(
 );
 
 export const professionalRouter = router({
-  all: publicProcedure.query(() =>
+  all: privateProcedure.query(() =>
     prisma.professional.findMany({
       select: defaultProfessionalSelect,
     }),
   ),
 
-  byId: publicProcedure
+  byId: privateProcedure
     .input(
       z.object({
         id: z.string(),
@@ -78,7 +78,7 @@ export const professionalRouter = router({
       return professional;
     }),
 
-  byUserId: publicProcedure
+  byUserId: privateProcedure
     .input(
       z.object({
         userId: z.string(),
@@ -100,7 +100,7 @@ export const professionalRouter = router({
       return professional;
     }),
 
-  search: publicProcedure
+  search: privateProcedure
     .input(
       z.object({
         name: z.string().min(1).optional(),
@@ -233,7 +233,7 @@ export const professionalRouter = router({
       });
     }),
 
-  addTechSkills: publicProcedure
+  addTechSkills: privateProcedure
     .input(
       z.object({
         id: z.string(),

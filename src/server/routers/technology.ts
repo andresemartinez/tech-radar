@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { prisma } from '~/server/prisma';
-import { publicProcedure, router } from '~/server/trpc';
+import { privateProcedure, router } from '~/server/trpc';
 
 const defaultTechnologySelect = Prisma.validator<Prisma.TechnologySelect>()({
   id: true,
@@ -11,7 +11,7 @@ const defaultTechnologySelect = Prisma.validator<Prisma.TechnologySelect>()({
 });
 
 export const technologyRouter = router({
-  all: publicProcedure.query(async () => {
+  all: privateProcedure.query(async () => {
     return prisma.technology.findMany({
       select: defaultTechnologySelect,
       where: {
@@ -20,7 +20,7 @@ export const technologyRouter = router({
     });
   }),
 
-  byId: publicProcedure
+  byId: privateProcedure
     .input(
       z.object({
         id: z.string(),
@@ -41,7 +41,7 @@ export const technologyRouter = router({
       return techSkillLevel;
     }),
 
-  edit: publicProcedure
+  edit: privateProcedure
     .input(
       z.object({
         id: z.string().uuid(),
@@ -60,7 +60,7 @@ export const technologyRouter = router({
       });
     }),
 
-  create: publicProcedure
+  create: privateProcedure
     .input(
       z.object({
         data: z.object({
@@ -77,7 +77,7 @@ export const technologyRouter = router({
       });
     }),
 
-  delete: publicProcedure
+  delete: privateProcedure
     .input(
       z.object({
         id: z.string().uuid(),

@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { prisma } from '~/server/prisma';
-import { publicProcedure, router } from '~/server/trpc';
+import { privateProcedure, router } from '~/server/trpc';
 
 export const userRouter = router({
-  edit: publicProcedure
+  edit: privateProcedure
     .input(
       z.object({
         id: z.string(),

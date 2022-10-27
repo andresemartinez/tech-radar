@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { prisma } from '~/server/prisma';
-import { publicProcedure, router } from '~/server/trpc';
+import { privateProcedure, router } from '~/server/trpc';
 
 const defaultTechnologyCategorySelect =
   Prisma.validator<Prisma.TechnologyCategorySelect>()({
@@ -11,14 +11,14 @@ const defaultTechnologyCategorySelect =
   });
 
 export const technologyCategoryRouter = router({
-  all: publicProcedure.query(async () => {
+  all: privateProcedure.query(async () => {
     return prisma.technologyCategory.findMany({
       select: defaultTechnologyCategorySelect,
       where: { active: true },
     });
   }),
 
-  byId: publicProcedure
+  byId: privateProcedure
     .input(
       z.object({
         id: z.string(),
@@ -39,7 +39,7 @@ export const technologyCategoryRouter = router({
       return technologyCategory;
     }),
 
-  edit: publicProcedure
+  edit: privateProcedure
     .input(
       z.object({
         id: z.string().uuid(),
@@ -57,7 +57,7 @@ export const technologyCategoryRouter = router({
       });
     }),
 
-  create: publicProcedure
+  create: privateProcedure
     .input(
       z.object({
         data: z.object({
@@ -73,7 +73,7 @@ export const technologyCategoryRouter = router({
       });
     }),
 
-  delete: publicProcedure
+  delete: privateProcedure
     .input(
       z.object({
         id: z.string().uuid(),

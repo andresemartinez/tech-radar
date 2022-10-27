@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { prisma } from '~/server/prisma';
-import { publicProcedure, router } from '~/server/trpc';
+import { privateProcedure, router } from '~/server/trpc';
 
 const defaultTechSkillLevelSelect =
   Prisma.validator<Prisma.TechSkillLevelSelect>()({
@@ -12,7 +12,7 @@ const defaultTechSkillLevelSelect =
   });
 
 export const techSkillLevelRouter = router({
-  all: publicProcedure.query(async () =>
+  all: privateProcedure.query(async () =>
     prisma.techSkillLevel.findMany({
       select: defaultTechSkillLevelSelect,
       where: { active: true },
@@ -20,7 +20,7 @@ export const techSkillLevelRouter = router({
     }),
   ),
 
-  byId: publicProcedure
+  byId: privateProcedure
     .input(
       z.object({
         id: z.string(),
@@ -41,7 +41,7 @@ export const techSkillLevelRouter = router({
       return techSkillLevel;
     }),
 
-  edit: publicProcedure
+  edit: privateProcedure
     .input(
       z.object({
         id: z.string().uuid(),
@@ -60,7 +60,7 @@ export const techSkillLevelRouter = router({
       });
     }),
 
-  create: publicProcedure
+  create: privateProcedure
     .input(
       z.object({
         data: z.object({
@@ -77,7 +77,7 @@ export const techSkillLevelRouter = router({
       });
     }),
 
-  delete: publicProcedure
+  delete: privateProcedure
     .input(
       z.object({
         id: z.string().uuid(),

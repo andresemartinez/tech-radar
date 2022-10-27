@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { prisma } from '~/server/prisma';
-import { publicProcedure, router } from '~/server/trpc';
+import { privateProcedure, router } from '~/server/trpc';
 
 const defaultTechSkillSelect = Prisma.validator<Prisma.TechSkillSelect>()({
   id: true,
@@ -21,7 +21,7 @@ const defaultTechSkillSelect = Prisma.validator<Prisma.TechSkillSelect>()({
 });
 
 export const techSkillRouter = router({
-  byId: publicProcedure
+  byId: privateProcedure
     .input(
       z.object({
         id: z.string(),
@@ -42,7 +42,7 @@ export const techSkillRouter = router({
       return techSkill;
     }),
 
-  delete: publicProcedure
+  delete: privateProcedure
     .input(
       z.object({
         id: z.string(),
@@ -56,7 +56,7 @@ export const techSkillRouter = router({
       });
     }),
 
-  edit: publicProcedure
+  edit: privateProcedure
     .input(
       z.object({
         id: z.string(),
