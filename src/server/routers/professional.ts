@@ -1,8 +1,8 @@
 import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { createRouter } from '~/server/createRouter';
 import { prisma } from '~/server/prisma';
+import { publicProcedure, router } from '~/server/trpc';
 
 export const OperationKey = z.enum(['gte', 'lte', 'eq']);
 export type OperationKey = z.infer<typeof OperationKey>;
@@ -49,19 +49,20 @@ const defaultProfessionalSelect = Prisma.validator<Prisma.ProfessionalSelect>()(
   },
 );
 
-export const professionalRouter = createRouter()
-  .query('all', {
-    async resolve() {
-      return prisma.professional.findMany({
-        select: defaultProfessionalSelect,
-      });
-    },
-  })
-  .query('byId', {
-    input: z.object({
-      id: z.string(),
+export const professionalRouter = router({
+  all: publicProcedure.query(() =>
+    prisma.professional.findMany({
+      select: defaultProfessionalSelect,
     }),
-    async resolve({ input }) {
+  ),
+
+  byId: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
       const { id } = input;
       const professional = await prisma.professional.findUnique({
         where: { id },
@@ -75,13 +76,15 @@ export const professionalRouter = createRouter()
         });
       }
       return professional;
-    },
-  })
-  .query('byUserId', {
-    input: z.object({
-      userId: z.string(),
     }),
-    async resolve({ input }) {
+
+  byUserId: publicProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
       const { userId } = input;
       const professional = await prisma.professional.findUnique({
         where: { userId },
@@ -95,20 +98,22 @@ export const professionalRouter = createRouter()
         });
       }
       return professional;
-    },
-  })
-  .query('search', {
-    input: z.object({
-      name: z.string().min(1).optional(),
-      techSkills: z.array(
-        z.object({
-          techId: z.string().uuid(),
-          levelWeight: z.number().gte(0),
-          levelOperator: OperationKey,
-        }),
-      ),
     }),
-    async resolve({ input }) {
+
+  search: publicProcedure
+    .input(
+      z.object({
+        name: z.string().min(1).optional(),
+        techSkills: z.array(
+          z.object({
+            techId: z.string().uuid(),
+            levelWeight: z.number().gte(0),
+            levelOperator: OperationKey,
+          }),
+        ),
+      }),
+    )
+    .query(async ({ input }) => {
       const { techSkills: techSkillsQuery } = input;
 
       const techSkillsIdsQuery = techSkillsQuery.map(
@@ -226,19 +231,21 @@ export const professionalRouter = createRouter()
           email: user?.email ?? '',
         };
       });
-    },
-  })
-  .mutation('addTechSkills', {
-    input: z.object({
-      id: z.string(),
-      skills: z.array(
-        z.object({
-          levelId: z.string(),
-          technologyId: z.string(),
-        }),
-      ),
     }),
-    async resolve({ input }) {
+
+  addTechSkills: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        skills: z.array(
+          z.object({
+            levelId: z.string(),
+            technologyId: z.string(),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ input }) => {
       const { id, skills } = input;
 
       const professional = await prisma.professional.findFirst({
@@ -270,5 +277,5 @@ export const professionalRouter = createRouter()
           },
         },
       });
-    },
-  });
+    }),
+});

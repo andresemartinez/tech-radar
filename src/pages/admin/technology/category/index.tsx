@@ -11,9 +11,7 @@ import { trpc } from '~/utils/trpc';
 
 const TechnologyCategoriesAdminPage: NextPageWithLayout = () => {
   const trpcUtils = trpc.useContext();
-  const { data: technologyCategories } = trpc.useQuery([
-    'technology-category.all',
-  ]);
+  const { data: technologyCategories } = trpc.technologyCategory.all.useQuery();
 
   return (
     <div className="flex flex-col ml-6">
@@ -32,7 +30,7 @@ const TechnologyCategoriesAdminPage: NextPageWithLayout = () => {
             id={technologyCategory.id}
             name={technologyCategory.name}
             onCategoryDeleted={() => {
-              trpcUtils.invalidateQueries(['technology-category.all']);
+              trpcUtils.technologyCategory.all.invalidate();
             }}
           />
         </div>
@@ -41,7 +39,7 @@ const TechnologyCategoriesAdminPage: NextPageWithLayout = () => {
       <div className="mt-2">
         <AddCategoryButton
           onCategoryAdded={() => {
-            trpcUtils.invalidateQueries(['technology-category.all']);
+            trpcUtils.technologyCategory.all.invalidate();
           }}
         />
       </div>
@@ -56,7 +54,7 @@ type AddCategoryButtonProps = {
 const AddCategoryButton = ({ onCategoryAdded }: AddCategoryButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
 
-  const addCategory = trpc.useMutation('technology-category.create', {
+  const addCategory = trpc.technologyCategory.create.useMutation({
     async onSuccess() {
       setModalOpen(false);
       onCategoryAdded();
@@ -130,7 +128,7 @@ const DeleteCategoryButton = ({
   onCategoryDeleted,
 }: DeleteCategoryButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const removeTech = trpc.useMutation('technology-category.delete', {
+  const removeTech = trpc.technologyCategory.delete.useMutation({
     async onSuccess() {
       onCategoryDeleted();
     },

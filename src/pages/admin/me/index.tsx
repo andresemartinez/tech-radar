@@ -16,10 +16,9 @@ import { trpc } from '~/utils/trpc';
 const ProfessionalAdminPage: NextPageWithLayout = () => {
   const trpcUtils = trpc.useContext();
   const { data: session } = useSession();
-  const { data: professional } = trpc.useQuery([
-    'professional.byUserId',
-    { userId: session?.user?.id ?? '' },
-  ]);
+  const { data: professional } = trpc.professional.byUserId.useQuery({
+    userId: session?.user?.id ?? '',
+  });
 
   const user = useMemo(() => session?.user, [session?.user]);
 
@@ -37,16 +36,16 @@ const ProfessionalAdminPage: NextPageWithLayout = () => {
           professionalId={professional.id}
           skills={professional.techSkills}
           onSkillAdded={() => {
-            trpcUtils.invalidateQueries(['professional.byUserId']);
-            trpcUtils.invalidateQueries(['chart.tech-radar.byProfessional']);
+            trpcUtils.professional.byUserId.invalidate();
+            trpcUtils.chart.techRadarByProfessional.invalidate();
           }}
           onSkillEdited={() => {
-            trpcUtils.invalidateQueries(['professional.byUserId']);
-            trpcUtils.invalidateQueries(['chart.tech-radar.byProfessional']);
+            trpcUtils.professional.byUserId.invalidate();
+            trpcUtils.chart.techRadarByProfessional.invalidate();
           }}
           onSkillDeleted={() => {
-            trpcUtils.invalidateQueries(['professional.byUserId']);
-            trpcUtils.invalidateQueries(['chart.tech-radar.byProfessional']);
+            trpcUtils.professional.byUserId.invalidate();
+            trpcUtils.chart.techRadarByProfessional.invalidate();
           }}
         />
       )}
@@ -84,7 +83,7 @@ type EditUserInfoButtonProps = {
 const EditUserInfoButton = ({ id, name }: EditUserInfoButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
 
-  const editUserInfo = trpc.useMutation('user.edit', {
+  const editUserInfo = trpc.user.edit.useMutation({
     async onSuccess() {
       setModalOpen(false);
 
@@ -226,7 +225,7 @@ const DeleteSkillButton = ({
   onSkillDeleted,
 }: DeleteSkillButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const removeSkills = trpc.useMutation('tech-skill.delete', {
+  const removeSkills = trpc.techSkill.delete.useMutation({
     async onSuccess() {
       onSkillDeleted();
     },
@@ -285,11 +284,9 @@ type EditSkillButtonProps = {
 
 const EditSkillButton = ({ skill, onSkillEdited }: EditSkillButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const { data: techSkillLevels } = trpc.useQuery([
-    'technology-skill-level.all',
-  ]);
+  const { data: techSkillLevels } = trpc.technologySkillLevel.all.useQuery();
 
-  const editSkills = trpc.useMutation('tech-skill.edit', {
+  const editSkills = trpc.techSkill.edit.useMutation({
     async onSuccess() {
       setModalOpen(false);
       onSkillEdited();
@@ -361,12 +358,10 @@ const AddSkillButton = ({
   onSkillAdded,
 }: AddSkillButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const { data: technologies } = trpc.useQuery(['technology.all']);
-  const { data: techSkillLevels } = trpc.useQuery([
-    'technology-skill-level.all',
-  ]);
+  const { data: technologies } = trpc.technology.all.useQuery();
+  const { data: techSkillLevels } = trpc.technologySkillLevel.all.useQuery();
 
-  const addSkills = trpc.useMutation('professional.addTechSkills', {
+  const addSkills = trpc.professional.addTechSkills.useMutation({
     async onSuccess() {
       setModalOpen(false);
       onSkillAdded();

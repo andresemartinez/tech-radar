@@ -11,7 +11,7 @@ import { trpc } from '~/utils/trpc';
 
 const TechnologyAdminPage: NextPageWithLayout = () => {
   const trpcUtils = trpc.useContext();
-  const { data: technologies } = trpc.useQuery(['technology.all']);
+  const { data: technologies } = trpc.technology.all.useQuery();
 
   return (
     <div className="flex flex-col ml-6">
@@ -33,7 +33,7 @@ const TechnologyAdminPage: NextPageWithLayout = () => {
             id={technology.id}
             name={technology.name}
             onTechDeleted={() => {
-              trpcUtils.invalidateQueries(['technology.all']);
+              trpcUtils.technology.all.invalidate();
             }}
           />
         </div>
@@ -42,7 +42,7 @@ const TechnologyAdminPage: NextPageWithLayout = () => {
       <div className="mt-2">
         <AddTechButton
           onTechAdded={() => {
-            trpcUtils.invalidateQueries(['technology.all']);
+            trpcUtils.technology.all.invalidate();
           }}
         />
       </div>
@@ -57,7 +57,7 @@ type AddTechButtonProps = {
 const AddTechButton = ({ onTechAdded }: AddTechButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
 
-  const addTechnology = trpc.useMutation('technology.create', {
+  const addTechnology = trpc.technology.create.useMutation({
     async onSuccess() {
       setModalOpen(false);
       onTechAdded();
@@ -140,7 +140,7 @@ const DeleteTechButton = ({
   onTechDeleted,
 }: DeleteTechButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const removeTech = trpc.useMutation('technology.delete', {
+  const removeTech = trpc.technology.delete.useMutation({
     async onSuccess() {
       onTechDeleted();
     },

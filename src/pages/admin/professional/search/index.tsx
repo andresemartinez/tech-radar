@@ -6,16 +6,16 @@ import { AdminLayout } from '~/components/admin/AdminLayout';
 import Autocomplete from '~/components/form/Autocomplete';
 import { NextPageWithLayout } from '~/pages/_app';
 import { OperationKey } from '~/server/routers/professional';
-import { inferQueryInput, trpc } from '~/utils/trpc';
+import { RouterInput, trpc } from '~/utils/trpc';
 
-type ProfessionalsSearchQuery = inferQueryInput<'professional.search'>;
+type ProfessionalsSearchQuery = RouterInput['professional']['search'];
 
 const SearchAdminPage: NextPageWithLayout = () => {
   const [professionalsQuery, setProfessionalsQuery] =
     useState<ProfessionalsSearchQuery>();
 
-  const { data: technologies } = trpc.useQuery(['technology.all']);
-  const { data: levels } = trpc.useQuery(['technology-skill-level.all']);
+  const { data: technologies } = trpc.technology.all.useQuery();
+  const { data: levels } = trpc.technologySkillLevel.all.useQuery();
 
   const operators = useMemo<{ id: OperationKey; name: string }[]>(
     () => [
@@ -163,7 +163,7 @@ type ProfessionalsProps = {
 };
 
 const Professionals = ({ query }: ProfessionalsProps) => {
-  const { data: professionals } = trpc.useQuery(['professional.search', query]);
+  const { data: professionals } = trpc.professional.search.useQuery(query);
 
   return (
     <div className="flex flex-col">

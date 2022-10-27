@@ -17,11 +17,11 @@ const TechnologyAdminPage: NextPageWithLayout = () => {
     data: technology,
     status,
     error,
-  } = trpc.useQuery(['technology.byId', { id }]);
+  } = trpc.technology.byId.useQuery({ id });
 
-  const editTechnology = trpc.useMutation('technology.edit', {
+  const editTechnology = trpc.technology.edit.useMutation({
     async onSuccess() {
-      await trpcUtils.invalidateQueries(['technology.byId']);
+      await trpcUtils.technology.byId.invalidate();
     },
   });
 

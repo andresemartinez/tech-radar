@@ -4,15 +4,15 @@ import { useForm } from 'react-hook-form';
 import { AdminLayout } from '~/components/admin/AdminLayout';
 import Autocomplete from '~/components/form/Autocomplete';
 import { NextPageWithLayout } from '~/pages/_app';
-import { inferQueryInput, trpc } from '~/utils/trpc';
+import { RouterInput, trpc } from '~/utils/trpc';
 
-type TechStatsPercentageQuery = inferQueryInput<'tech-stats.percentage'>;
+type TechStatsPercentageQuery = RouterInput['techStats']['percentage'];
 
 const TechStatsAdminPage: NextPageWithLayout = () => {
   const [techStatsQuery, setTechStatsQuery] =
     useState<TechStatsPercentageQuery>();
 
-  const { data: technologies } = trpc.useQuery(['technology.all']);
+  const { data: technologies } = trpc.technology.all.useQuery();
 
   return (
     <div>
@@ -63,8 +63,8 @@ type TechStatsProps = {
 };
 
 const TechStats = ({ query }: TechStatsProps) => {
-  const { data: percentage } = trpc.useQuery(['tech-stats.percentage', query]);
-  const { data: level } = trpc.useQuery(['tech-stats.level', query]);
+  const { data: percentage } = trpc.techStats.percentage.useQuery(query);
+  const { data: level } = trpc.techStats.level.useQuery(query);
 
   return (
     <div className="flex flex-col">

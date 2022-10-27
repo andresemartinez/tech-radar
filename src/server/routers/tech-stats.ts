@@ -1,13 +1,15 @@
 import { z } from 'zod';
-import { createRouter } from '~/server/createRouter';
 import { prisma } from '~/server/prisma';
+import { publicProcedure, router } from '~/server/trpc';
 
-export const techStatsRouter = createRouter()
-  .query('percentage', {
-    input: z.object({
-      id: z.string(),
-    }),
-    async resolve({ input }) {
+export const techStatsRouter = router({
+  percentage: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
       const { id } = input;
 
       const techSkillsQuery = prisma.techSkill.findMany({
@@ -57,13 +59,15 @@ export const techStatsRouter = createRouter()
         skillPercentage:
           (skilledProfessionals / professionals._count.active) * 100,
       };
-    },
-  })
-  .query('level', {
-    input: z.object({
-      id: z.string(),
     }),
-    async resolve({ input }) {
+
+  level: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
       const { id } = input;
 
       const techSkills = await prisma.techSkill.findMany({
@@ -124,5 +128,5 @@ export const techStatsRouter = createRouter()
         maxWeight,
         name,
       };
-    },
-  });
+    }),
+});

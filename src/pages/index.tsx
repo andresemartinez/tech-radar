@@ -3,7 +3,7 @@ import { trpc } from '~/utils/trpc';
 import { NextPageWithLayout } from './_app';
 
 const IndexPage: NextPageWithLayout = () => {
-  const techRadarDataset = trpc.useQuery(['chart.tech-radar']);
+  const techRadarDataset = trpc.chart.techRadar.useQuery();
 
   return (
     <>

@@ -1,8 +1,8 @@
 import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { createRouter } from '~/server/createRouter';
 import { prisma } from '~/server/prisma';
+import { publicProcedure, router } from '~/server/trpc';
 
 const defaultTechSkillSelect = Prisma.validator<Prisma.TechSkillSelect>()({
   id: true,
@@ -20,12 +20,14 @@ const defaultTechSkillSelect = Prisma.validator<Prisma.TechSkillSelect>()({
   },
 });
 
-export const techSkillRouter = createRouter()
-  .query('byId', {
-    input: z.object({
-      id: z.string(),
-    }),
-    async resolve({ input }) {
+export const techSkillRouter = router({
+  byId: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
       const { id } = input;
       const techSkill = await prisma.techSkill.findUnique({
         where: { id },
@@ -38,33 +40,37 @@ export const techSkillRouter = createRouter()
         });
       }
       return techSkill;
-    },
-  })
-  .mutation('delete', {
-    input: z.object({
-      id: z.string(),
     }),
-    async resolve({ input }) {
+
+  delete: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ input }) => {
       const { id } = input;
 
       await prisma.techSkill.delete({
         where: { id },
       });
-    },
-  })
-  .mutation('edit', {
-    input: z.object({
-      id: z.string(),
-      data: z.object({
-        levelId: z.string(),
-      }),
     }),
-    async resolve({ input }) {
+
+  edit: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        data: z.object({
+          levelId: z.string(),
+        }),
+      }),
+    )
+    .mutation(async ({ input }) => {
       const { id, data } = input;
 
       await prisma.techSkill.update({
         where: { id },
         data,
       });
-    },
-  });
+    }),
+});

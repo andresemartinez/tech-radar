@@ -1,8 +1,8 @@
 import { Prisma } from '@prisma/client';
-import { createRouter } from '~/server/createRouter';
-import { prisma } from '~/server/prisma';
-import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
+import { prisma } from '~/server/prisma';
+import { publicProcedure, router } from '~/server/trpc';
 
 const defaultTechnologyCategorySelect =
   Prisma.validator<Prisma.TechnologyCategorySelect>()({
@@ -10,20 +10,21 @@ const defaultTechnologyCategorySelect =
     name: true,
   });
 
-export const technologyCategoryRouter = createRouter()
-  .query('all', {
-    async resolve() {
-      return prisma.technologyCategory.findMany({
-        select: defaultTechnologyCategorySelect,
-        where: { active: true },
-      });
-    },
-  })
-  .query('byId', {
-    input: z.object({
-      id: z.string(),
-    }),
-    async resolve({ input }) {
+export const technologyCategoryRouter = router({
+  all: publicProcedure.query(async () => {
+    return prisma.technologyCategory.findMany({
+      select: defaultTechnologyCategorySelect,
+      where: { active: true },
+    });
+  }),
+
+  byId: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
       const { id } = input;
       const technologyCategory = await prisma.technologyCategory.findUnique({
         where: { id },
@@ -36,43 +37,49 @@ export const technologyCategoryRouter = createRouter()
         });
       }
       return technologyCategory;
-    },
-  })
-  .mutation('edit', {
-    input: z.object({
-      id: z.string().uuid(),
-      data: z.object({
-        name: z.string().trim().min(1),
-      }),
     }),
-    async resolve({ input }) {
+
+  edit: publicProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        data: z.object({
+          name: z.string().trim().min(1),
+        }),
+      }),
+    )
+    .mutation(async ({ input }) => {
       const { id, data } = input;
       return await prisma.technologyCategory.update({
         where: { id },
         data,
         select: defaultTechnologyCategorySelect,
       });
-    },
-  })
-  .mutation('create', {
-    input: z.object({
-      data: z.object({
-        name: z.string().trim().min(1),
-      }),
     }),
-    async resolve({ input }) {
+
+  create: publicProcedure
+    .input(
+      z.object({
+        data: z.object({
+          name: z.string().trim().min(1),
+        }),
+      }),
+    )
+    .mutation(async ({ input }) => {
       const { data } = input;
       return await prisma.technologyCategory.create({
         data,
         select: defaultTechnologyCategorySelect,
       });
-    },
-  })
-  .mutation('delete', {
-    input: z.object({
-      id: z.string().uuid(),
     }),
-    async resolve({ input }) {
+
+  delete: publicProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+      }),
+    )
+    .mutation(async ({ input }) => {
       const { id } = input;
       return await prisma.technologyCategory.update({
         where: { id },
@@ -81,5 +88,5 @@ export const technologyCategoryRouter = createRouter()
         },
         select: defaultTechnologyCategorySelect,
       });
-    },
-  });
+    }),
+});
