@@ -9,6 +9,7 @@ import { NextPageWithLayout } from '~/pages/_app';
 import { RouterInput, trpc } from '~/utils/trpc';
 
 type TechStatsPercentageQuery = RouterInput['techStats']['percentage'];
+type TechStatsTrendQuery = RouterInput['techStats']['chart']['trend'];
 
 const TechStatsAdminPage: NextPageWithLayout = () => {
   const [techStatsQuery, setTechStatsQuery] =
@@ -28,7 +29,7 @@ const TechStatsAdminPage: NextPageWithLayout = () => {
         <div className="flex flex-row">
           <TechStats query={techStatsQuery} />
           <div className="w-[800px] h-[1000px]">
-            <TechTrendChart query={{ techId: techStatsQuery.id }} />
+            <TechTrendChart query={techStatsQuery} />
           </div>
         </div>
       )}
@@ -47,7 +48,7 @@ const SearchForm = ({ technologies, onSearch }: SearchFormProps) => {
   }>();
 
   return (
-    <form onSubmit={handleSubmit((data) => onSearch({ id: data.tech.id }))}>
+    <form onSubmit={handleSubmit((data) => onSearch({ techId: data.tech.id }))}>
       <div className="flex flex-col pb-2">
         <Autocomplete
           className="flex-grow basis-1 mr-3"
@@ -93,9 +94,7 @@ const TechStats = ({ query }: TechStatsProps) => {
 };
 
 type TechTrendChartProps = {
-  query: {
-    techId: string;
-  };
+  query: TechStatsTrendQuery;
 };
 
 const TechTrendChart = ({ query }: TechTrendChartProps) => {

@@ -1,5 +1,4 @@
 import { TRPCError } from '@trpc/server';
-import { ChartOptions } from 'chart.js';
 import { z } from 'zod';
 import { prisma } from '~/server/prisma';
 import { privateProcedure, router } from '~/server/trpc';
@@ -8,11 +7,11 @@ export const techStatsRouter = router({
   percentage: privateProcedure
     .input(
       z.object({
-        id: z.string(),
+        techId: z.string(),
       }),
     )
     .query(async ({ input }) => {
-      const { id } = input;
+      const { techId: id } = input;
 
       const techSkillsQuery = prisma.techSkill.findMany({
         select: {
@@ -67,11 +66,11 @@ export const techStatsRouter = router({
   level: privateProcedure
     .input(
       z.object({
-        id: z.string(),
+        techId: z.string(),
       }),
     )
     .query(async ({ input }) => {
-      const { id } = input;
+      const { techId: id } = input;
 
       const techSkills = await prisma.techSkill.findMany({
         select: {
