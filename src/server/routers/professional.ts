@@ -45,6 +45,9 @@ const defaultProfessionalSelect = Prisma.validator<Prisma.ProfessionalSelect>()(
           name: 'asc',
         },
       },
+      where: {
+        current: true,
+      },
     },
   },
 );
@@ -248,12 +251,15 @@ export const professionalRouter = router({
     .mutation(async ({ input }) => {
       const { id, skills } = input;
 
-      const professional = await prisma.professional.findFirst({
+      const professional = await prisma.professional.findUnique({
         select: {
           techSkills: {
             select: {
               levelId: true,
               technologyId: true,
+            },
+            where: {
+              current: true,
             },
           },
         },

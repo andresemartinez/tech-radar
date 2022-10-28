@@ -73,14 +73,13 @@ model TechSkill {
   id                 String         @id @default(uuid())
   creationDateTime   DateTime       @default(now())
   lastUpdateDateTime DateTime       @default(now()) @updatedAt
+  current            Boolean        @default(true)
   level              TechSkillLevel @relation(fields: [levelId], references: [id])
   levelId            String
   technology         Technology     @relation(fields: [technologyId], references: [id])
   technologyId       String
   professional       Professional   @relation(fields: [professionalId], references: [id])
   professionalId     String
-
-  @@unique([technologyId, professionalId])
 }
 
 model TechSkillLevel {

@@ -19,6 +19,7 @@ const skillSelect = Prisma.validator<Prisma.TechSkillSelect>()({
 export async function techRadarDataset() {
   const skills = await prisma.techSkill.findMany({
     select: skillSelect,
+    where: { current: true },
   });
 
   return buildTechRadarDataset(skills);
@@ -27,7 +28,7 @@ export async function techRadarDataset() {
 export async function professionalTechRadarDataset(professionalId: string) {
   const skills = await prisma.techSkill.findMany({
     select: skillSelect,
-    where: { professionalId },
+    where: { professionalId, current: true },
   });
 
   return buildTechRadarDataset(skills);

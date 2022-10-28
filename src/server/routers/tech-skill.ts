@@ -68,9 +68,44 @@ export const techSkillRouter = router({
     .mutation(async ({ input }) => {
       const { id, data } = input;
 
+      const newLevelId = data.levelId;
+
+      const techSkill = await prisma.techSkill.findUnique({
+        select: {
+          id: true,
+          levelId: true,
+          technologyId: true,
+          professionalId: true,
+          current: true,
+        },
+        where: { id },
+      });
+
+      if (!techSkill) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: `No tech skill with id '${id}'`,
+        });
+      }
+
+      if (!techSkill.current) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: `Cannot edit a tech skill that is not current '${id}'`,
+        });
+      }
+
       await prisma.techSkill.update({
         where: { id },
-        data,
+        data: { current: false },
+      });
+
+      await prisma.techSkill.create({
+        data: {
+          levelId: newLevelId,
+          technologyId: techSkill.technologyId,
+          professionalId: techSkill.professionalId,
+        },
       });
     }),
 });
