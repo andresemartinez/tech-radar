@@ -1,4 +1,5 @@
 import { TRPCError } from '@trpc/server';
+import { ChartOptions } from 'chart.js';
 import { z } from 'zod';
 import { prisma } from '~/server/prisma';
 import { privateProcedure, router } from '~/server/trpc';
@@ -187,29 +188,6 @@ export const techStatsRouter = router({
 
         return {
           data: { datasets },
-          options: {
-            scales: {
-              x: {
-                type: 'time',
-                ticks: {
-                  source: 'auto',
-                },
-                time: {
-                  minUnit: 'minute',
-
-                  displayFormats: {
-                    minute: 'HH:mm',
-                    hour: 'dd/MM HH:mm',
-                    day: 'dd/MM',
-                    week: 'dd/MM',
-                    month: 'MMMM yyyy',
-                    quarter: 'MMMM yyyy',
-                    year: 'yyyy',
-                  },
-                },
-              },
-            },
-          },
         };
       }),
   }),

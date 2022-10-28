@@ -1,5 +1,6 @@
 import { Button } from '@mui/material';
-import { useState } from 'react';
+import { ChartOptions } from 'chart.js';
+import { useMemo, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { useForm } from 'react-hook-form';
 import { AdminLayout } from '~/components/admin/AdminLayout';
@@ -99,39 +100,45 @@ type TechTrendChartProps = {
 
 const TechTrendChart = ({ query }: TechTrendChartProps) => {
   const { data: techTrend } = trpc.techStats.chart.trend.useQuery(query);
+  const { data: levels } = trpc.techSkillLevel.all.useQuery();
 
-  return (
-    <>
-      {techTrend && (
-        <Line
-          data={techTrend.data}
-          options={{
-            scales: {
-              x: {
-                type: 'time',
-                ticks: {
-                  source: 'auto',
-                },
-                time: {
-                  minUnit: 'minute',
+  const options = useMemo<ChartOptions<'line'>>(
+    () => ({
+      scales: {
+        xAxes: {
+          type: 'time',
+          ticks: {
+            source: 'auto',
+          },
+          time: {
+            minUnit: 'minute',
 
-                  displayFormats: {
-                    minute: 'HH:mm',
-                    hour: 'dd/MM HH:mm',
-                    day: 'dd/MM',
-                    week: 'dd/MM',
-                    month: 'MMMM yyyy',
-                    quarter: 'MMMM yyyy',
-                    year: 'yyyy',
-                  },
-                },
-              },
+            displayFormats: {
+              minute: 'HH:mm',
+              hour: 'dd/MM HH:mm',
+              day: 'dd/MM',
+              week: 'dd/MM',
+              month: 'MMMM yyyy',
+              quarter: 'MMMM yyyy',
+              year: 'yyyy',
             },
-          }}
-        />
-      )}
-    </>
+          },
+        },
+        yAxes: {
+          type: 'linear',
+          ticks: {
+            callback: (label) => {
+              const level = levels?.find((level) => level.weight === label);
+              return level ? `${level?.name} - ${label}` : label;
+            },
+          },
+        },
+      },
+    }),
+    [levels],
   );
+
+  return <>{techTrend && <Line data={techTrend.data} options={options} />}</>;
 };
 
 TechStatsAdminPage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;
