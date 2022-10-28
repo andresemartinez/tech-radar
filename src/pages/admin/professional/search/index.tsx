@@ -6,9 +6,13 @@ import { AdminLayout } from '~/components/admin/AdminLayout';
 import Autocomplete from '~/components/form/Autocomplete';
 import { NextPageWithLayout } from '~/pages/_app';
 import { OperationKey } from '~/server/routers/professional';
-import { RouterInput, trpc } from '~/utils/trpc';
+import { RouterInput, RouterOutput, trpc } from '~/utils/trpc';
+import Modal from '~/components/Modal';
+import ProfessionalTechRadar from '~/components/ProfessionalTechRadar';
 
 type ProfessionalsSearchQuery = RouterInput['professional']['search'];
+type ProfessionalsSearchResult = RouterOutput['professional']['search'];
+type Professional = ProfessionalsSearchResult[number];
 
 const SearchAdminPage: NextPageWithLayout = () => {
   const [professionalsQuery, setProfessionalsQuery] =
@@ -163,21 +167,91 @@ type ProfessionalsProps = {
 };
 
 const Professionals = ({ query }: ProfessionalsProps) => {
+  const [selectedProfessionalId, setSelectedProfessionalId] = useState<
+    Professional['id'] | null
+  >(null);
+
   const { data: professionals } = trpc.professional.search.useQuery(query);
+  const { data: professional } = trpc.professional.byId.useQuery(
+    {
+      id: selectedProfessionalId ?? '',
+    },
+    { enabled: !!selectedProfessionalId },
+  );
+
+  const selectedProfessional = useMemo(
+    () =>
+      professionals?.find(
+        (professional) => professional.id === selectedProfessionalId,
+      ),
+    [professionals, selectedProfessionalId],
+  );
 
   return (
-    <div className="flex flex-col">
-      {professionals?.map((professional) => (
-        <div key={professional.id} className="flex flex-row">
-          <div className="mx-2">
-            <span>{professional.name}</span>
+    <>
+      <div className="flex flex-col">
+        {professionals?.map((professional) => (
+          <ProfessionalRow
+            key={professional.id}
+            professional={professional}
+            onClick={(professionalId) =>
+              setSelectedProfessionalId(professionalId)
+            }
+          />
+        ))}
+        {professionals?.length === 0 && <span>No professionals found</span>}
+      </div>
+
+      <Modal
+        open={!!selectedProfessionalId}
+        onClose={() => setSelectedProfessionalId(null)}
+      >
+        <div className="w-[800px] px-[20px] py-[40px]">
+          <div className="flex flex-row pb-[20px] align-bottom">
+            <span className="font-bold text-lg pr-1">
+              {selectedProfessional?.name}
+            </span>
+            <span className="font-semibold text-sm text-gray-500 leading-7 pl-1">
+              ({selectedProfessional?.email})
+            </span>
           </div>
-          <div className="mx-2">
-            <span>{professional.email}</span>
+
+          <div className="flex flex-row justify-between">
+            <div className="flex flex-col">
+              {professional?.techSkills.map((techSkill) => (
+                <div key={techSkill.id} className="flex flex-row pb-2">
+                  <span className="pr-1">{techSkill.technology.name}</span>
+                  <span className="pl-1">{techSkill.level.name}</span>
+                </div>
+              ))}
+            </div>
+            <div>
+              <ProfessionalTechRadar
+                id={selectedProfessional?.id ?? ''}
+                size={200}
+              />
+            </div>
           </div>
         </div>
-      ))}
-      {professionals?.length === 0 && <span>No professionals found</span>}
+      </Modal>
+    </>
+  );
+};
+
+type ProfessionalRowProps = {
+  professional: Professional;
+  onClick: (id: Professional['id']) => void;
+};
+
+const ProfessionalRow = ({ professional, onClick }: ProfessionalRowProps) => {
+  return (
+    <div className="flex flex-row" onClick={() => onClick(professional.id)}>
+      <div className="mx-2">
+        <span>{professional.name}</span>
+      </div>
+      <div className="mx-2">
+        <span>{professional.email}</span>
+      </div>
     </div>
   );
 };

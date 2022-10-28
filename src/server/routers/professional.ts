@@ -53,12 +53,6 @@ const defaultProfessionalSelect = Prisma.validator<Prisma.ProfessionalSelect>()(
 );
 
 export const professionalRouter = router({
-  all: privateProcedure.query(() =>
-    prisma.professional.findMany({
-      select: defaultProfessionalSelect,
-    }),
-  ),
-
   byId: privateProcedure
     .input(
       z.object({
@@ -100,6 +94,7 @@ export const professionalRouter = router({
           message: `No professional for user '${userId}'`,
         });
       }
+
       return professional;
     }),
 
