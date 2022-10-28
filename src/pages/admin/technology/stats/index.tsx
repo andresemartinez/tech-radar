@@ -105,7 +105,7 @@ const TechTrendChart = ({ query }: TechTrendChartProps) => {
   const options = useMemo<ChartOptions<'line'>>(
     () => ({
       scales: {
-        xAxes: {
+        xAxis: {
           type: 'time',
           ticks: {
             source: 'auto',
@@ -124,7 +124,7 @@ const TechTrendChart = ({ query }: TechTrendChartProps) => {
             },
           },
         },
-        yAxes: {
+        yAxis: {
           type: 'linear',
           ticks: {
             callback: (label) => {
