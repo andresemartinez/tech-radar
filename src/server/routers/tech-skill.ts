@@ -51,8 +51,9 @@ export const techSkillRouter = router({
     .mutation(async ({ input }) => {
       const { id } = input;
 
-      await prisma.techSkill.delete({
+      await prisma.techSkill.update({
         where: { id },
+        data: { current: false },
       });
     }),
 
