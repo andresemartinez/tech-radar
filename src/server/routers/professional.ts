@@ -148,6 +148,7 @@ export const professionalRouter = router({
           technologyId: {
             in: techSkillsIdsQuery,
           },
+          current: true,
         },
       });
 

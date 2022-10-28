@@ -1,8 +1,20 @@
+import 'chartjs-adapter-date-fns';
+
 import {
+  CategoryScale,
   Chart as ChartJS,
+  LinearScale,
   LineElement,
   PointElement,
   RadialLinearScale,
+  TimeScale,
 } from 'chart.js';
 
-ChartJS.register(RadialLinearScale, LineElement, PointElement);
+ChartJS.register(
+  RadialLinearScale,
+  LineElement,
+  PointElement,
+  CategoryScale,
+  LinearScale,
+  TimeScale,
+);

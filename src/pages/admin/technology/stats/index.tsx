@@ -1,5 +1,6 @@
 import { Button } from '@mui/material';
 import { useState } from 'react';
+import { Line } from 'react-chartjs-2';
 import { useForm } from 'react-hook-form';
 import { AdminLayout } from '~/components/admin/AdminLayout';
 import Autocomplete from '~/components/form/Autocomplete';
@@ -15,14 +16,21 @@ const TechStatsAdminPage: NextPageWithLayout = () => {
   const { data: technologies } = trpc.technology.all.useQuery();
 
   return (
-    <div>
+    <div className="flex flex-col">
       {technologies && (
         <SearchForm
           technologies={technologies}
           onSearch={(query) => setTechStatsQuery(query)}
         />
       )}
-      {techStatsQuery && <TechStats query={techStatsQuery} />}
+      {techStatsQuery && (
+        <div className="flex flex-row">
+          <TechStats query={techStatsQuery} />
+          <div className="w-[800px] h-[1000px]">
+            <TechTrendChart query={{ techId: techStatsQuery.id }} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -80,6 +88,49 @@ const TechStats = ({ query }: TechStatsProps) => {
         </span>
       </div>
     </div>
+  );
+};
+
+type TechTrendChartProps = {
+  query: {
+    techId: string;
+  };
+};
+
+const TechTrendChart = ({ query }: TechTrendChartProps) => {
+  const { data: techTrend } = trpc.techStats.chart.trend.useQuery(query);
+
+  return (
+    <>
+      {techTrend && (
+        <Line
+          data={techTrend.data}
+          options={{
+            scales: {
+              x: {
+                type: 'time',
+                ticks: {
+                  source: 'auto',
+                },
+                time: {
+                  minUnit: 'minute',
+
+                  displayFormats: {
+                    minute: 'HH:mm',
+                    hour: 'dd/MM HH:mm',
+                    day: 'dd/MM',
+                    week: 'dd/MM',
+                    month: 'MMMM yyyy',
+                    quarter: 'MMMM yyyy',
+                    year: 'yyyy',
+                  },
+                },
+              },
+            },
+          }}
+        />
+      )}
+    </>
   );
 };
 

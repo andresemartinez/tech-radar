@@ -45,7 +45,9 @@
     "@trpc/server": "^10.0.0-rc.1",
     "autoprefixer": "^10.4.7",
     "chart.js": "^3.8.0",
+    "chartjs-adapter-date-fns": "^2.0.0",
     "clsx": "^1.1.1",
+    "date-fns": "^2.29.3",
     "next": "^12.1.6",
     "next-auth": "^4.9.0",
     "postcss": "^8.4.14",
@@ -60,6 +62,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.19.2",
+    "@types/date-fns": "^2.6.0",
     "@types/jest": "^27.0.1",
     "@types/node": "^17.0.10",
     "@types/react": "^18.0.9",

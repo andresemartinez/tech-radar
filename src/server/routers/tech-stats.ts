@@ -1,3 +1,4 @@
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { prisma } from '~/server/prisma';
 import { privateProcedure, router } from '~/server/trpc';
@@ -29,6 +30,7 @@ export const techStatsRouter = router({
         },
         where: {
           technologyId: id,
+          current: true,
         },
       });
 
@@ -80,6 +82,7 @@ export const techStatsRouter = router({
         },
         where: {
           technologyId: id,
+          current: true,
         },
       });
 
@@ -129,4 +132,85 @@ export const techStatsRouter = router({
         name,
       };
     }),
+
+  chart: router({
+    trend: privateProcedure
+      .input(
+        z.object({
+          techId: z.string().uuid(),
+        }),
+      )
+      .query(async ({ input }) => {
+        const { techId } = input;
+
+        const tech = await prisma.technology.findUnique({
+          select: {
+            name: true,
+          },
+          where: { id: techId },
+        });
+
+        if (!tech) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: `No technology with id ${techId}`,
+          });
+        }
+
+        const techSkills = await prisma.techSkill.findMany({
+          select: {
+            creationDateTime: true,
+            level: {
+              select: {
+                weight: true,
+              },
+            },
+          },
+          where: {
+            technologyId: techId,
+          },
+          orderBy: {
+            creationDateTime: 'asc',
+          },
+        });
+
+        const datasets = [
+          {
+            label: tech.name,
+            data: techSkills.map((techSkill) => ({
+              x: techSkill.creationDateTime,
+              y: techSkill.level.weight,
+            })),
+            fill: false,
+          },
+        ];
+
+        return {
+          data: { datasets },
+          options: {
+            scales: {
+              x: {
+                type: 'time',
+                ticks: {
+                  source: 'auto',
+                },
+                time: {
+                  minUnit: 'minute',
+
+                  displayFormats: {
+                    minute: 'HH:mm',
+                    hour: 'dd/MM HH:mm',
+                    day: 'dd/MM',
+                    week: 'dd/MM',
+                    month: 'MMMM yyyy',
+                    quarter: 'MMMM yyyy',
+                    year: 'yyyy',
+                  },
+                },
+              },
+            },
+          },
+        };
+      }),
+  }),
 });
