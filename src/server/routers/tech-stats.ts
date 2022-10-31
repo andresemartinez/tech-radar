@@ -92,9 +92,11 @@ export const techStatsRouter = router({
       });
 
       const weight =
-        techSkills
-          .map((techSkill) => techSkill.level.weight)
-          .reduce((acc, item) => acc + item, 0) / techSkills.length;
+        techSkills.length > 0
+          ? techSkills
+              .map((techSkill) => techSkill.level.weight)
+              .reduce((acc, item) => acc + item) / techSkills.length
+          : 0;
 
       const techSkillLevels = await prisma.techSkillLevel.findMany({
         select: {

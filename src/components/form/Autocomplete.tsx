@@ -50,7 +50,7 @@ const Autocomplete = <
           multiple={multiple}
           onChange={(_, value) => field.onChange(value)}
           onBlur={() => field.onBlur()}
-          value={field.value}
+          value={field.value ?? null}
           renderInput={(params) => (
             <TextField
               {...params}

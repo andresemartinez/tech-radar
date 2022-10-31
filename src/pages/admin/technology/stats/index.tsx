@@ -53,6 +53,7 @@ const SearchForm = ({ technologies, onSearch }: SearchFormProps) => {
         <Autocomplete
           className="flex-grow basis-1 mr-3"
           name="tech"
+          label="Technology"
           control={control}
           required
           options={technologies}
@@ -125,6 +126,8 @@ const TechTrendChart = ({ query }: TechTrendChartProps) => {
         },
         yAxis: {
           type: 'linear',
+          suggestedMin: 0,
+          suggestedMax: 100,
           ticks: {
             callback: (label) => {
               const level = levels?.find((level) => level.weight === label);
