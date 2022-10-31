@@ -1,11 +1,11 @@
 import { Button } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import { RouterInput, RouterOutput } from '~/utils/trpc';
+import { RouterOutput } from '~/utils/trpc';
 import Autocomplete from './form/Autocomplete';
 import TextInput from './form/TextInput';
 
 type Technology = RouterOutput['technology']['byId'];
-type Category = RouterOutput['technologyCategory']['all'][number];
+type Category = RouterOutput['techCategory']['all'][number];
 
 type TechnologyFormProps = {
   technology: Technology;
