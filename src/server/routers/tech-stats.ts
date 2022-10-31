@@ -35,6 +35,11 @@ export const techStatsRouter = router({
       });
 
       const professionalsQuery = prisma.professional.aggregate({
+        where: {
+          techSkills: {
+            some: {},
+          },
+        },
         _count: {
           active: true,
         },
