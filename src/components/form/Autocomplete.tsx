@@ -19,9 +19,13 @@ const Autocomplete = <
   isOptionEqualToValue,
   filterOptions,
   name,
+  label,
+  multiple = false,
 }: Omit<UseControllerProps<TFieldValues>, 'rules'> & {
   className: string;
   required: boolean;
+  label: string;
+  multiple?: boolean;
   options: ReadonlyArray<T>;
   filterOptions?: (options: T[], state: FilterOptionsState<T>) => T[];
   getOptionLabel?: (
@@ -43,10 +47,17 @@ const Autocomplete = <
           getOptionLabel={getOptionLabel}
           isOptionEqualToValue={isOptionEqualToValue}
           filterOptions={filterOptions}
+          multiple={multiple}
           onChange={(_, value) => field.onChange(value)}
           onBlur={() => field.onBlur()}
+          value={field.value}
           renderInput={(params) => (
-            <TextField {...params} inputRef={field.ref} variant="outlined" />
+            <TextField
+              {...params}
+              inputRef={field.ref}
+              variant="outlined"
+              label={label}
+            />
           )}
         />
       )}

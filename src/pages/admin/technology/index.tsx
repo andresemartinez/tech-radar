@@ -4,10 +4,14 @@ import Link from 'next/link';
 import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { AdminLayout } from '~/components/admin/AdminLayout';
+import Autocomplete from '~/components/form/Autocomplete';
 import TextInput from '~/components/form/TextInput';
 import Modal from '~/components/Modal';
 import { NextPageWithLayout } from '~/pages/_app';
-import { trpc } from '~/utils/trpc';
+import { RouterInput, RouterOutput, trpc } from '~/utils/trpc';
+
+type Category = RouterOutput['technologyCategory']['all'][number];
+type TechCreateMutation = RouterInput['technology']['create']['data'];
 
 const TechnologyAdminPage: NextPageWithLayout = () => {
   const trpcUtils = trpc.useContext();
@@ -57,6 +61,8 @@ type AddTechButtonProps = {
 const AddTechButton = ({ onTechAdded }: AddTechButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
 
+  const { data: categories } = trpc.technologyCategory.all.useQuery();
+
   const addTechnology = trpc.technology.create.useMutation({
     async onSuccess() {
       setModalOpen(false);
@@ -65,7 +71,7 @@ const AddTechButton = ({ onTechAdded }: AddTechButtonProps) => {
   });
 
   const onAdd = useCallback(
-    (technology: { name: string; description: string }) => {
+    (technology: TechCreateMutation) => {
       addTechnology.mutateAsync({ data: technology });
     },
     [addTechnology],
@@ -77,6 +83,7 @@ const AddTechButton = ({ onTechAdded }: AddTechButtonProps) => {
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="w-[600px] px-[20px] py-[40px]">
           <AddTechForm
+            categories={categories ?? []}
             onCancel={() => setModalOpen(false)}
             onSubmit={(technology) => onAdd(technology)}
           />
@@ -87,18 +94,29 @@ const AddTechButton = ({ onTechAdded }: AddTechButtonProps) => {
 };
 
 type AddTechFormProps = {
+  categories: Category[];
   onCancel: () => void;
-  onSubmit: (technology: { name: string; description: string }) => void;
+  onSubmit: (technology: TechCreateMutation) => void;
 };
 
-const AddTechForm = ({ onCancel, onSubmit }: AddTechFormProps) => {
+const AddTechForm = ({ categories, onCancel, onSubmit }: AddTechFormProps) => {
   const { control, handleSubmit } = useForm<{
     name: string;
     description: string;
+    categories: Category[];
   }>();
 
   return (
-    <form onSubmit={handleSubmit((data) => onSubmit(data))}>
+    <form
+      onSubmit={handleSubmit((data) => {
+        const { name, description, categories } = data;
+        onSubmit({
+          name,
+          description,
+          categories: categories.map((category) => category.id),
+        });
+      })}
+    >
       <div className="flex flex-row pb-2">
         <TextInput
           className="flex-grow basis-1 mr-3"
@@ -114,6 +132,18 @@ const AddTechForm = ({ onCancel, onSubmit }: AddTechFormProps) => {
           label="Description"
           control={control}
           required
+        />
+
+        <Autocomplete
+          className="flex-grow basis-1 mr-3"
+          name="categories"
+          label="Categories"
+          control={control}
+          required
+          multiple
+          options={categories}
+          getOptionLabel={(option) => option.name}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
         />
       </div>
 

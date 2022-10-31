@@ -8,6 +8,12 @@ const defaultTechnologySelect = Prisma.validator<Prisma.TechnologySelect>()({
   id: true,
   name: true,
   description: true,
+  categories: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
 });
 
 export const technologyRouter = router({
@@ -48,14 +54,46 @@ export const technologyRouter = router({
         data: z.object({
           name: z.string().trim().min(1).optional(),
           description: z.string().trim().min(1).optional(),
+          categories: z.array(z.string().trim().uuid()),
         }),
       }),
     )
     .mutation(async ({ input }) => {
       const { id, data } = input;
+
+      const technology = await prisma.technology.findUnique({
+        select: {
+          categories: {
+            select: {
+              id: true,
+            },
+          },
+        },
+        where: { id },
+      });
+
+      const currentCategories =
+        technology?.categories?.map((category) => category.id) ?? [];
+      const newCategories = data.categories;
+
+      const categoriesToAdd = newCategories.filter(
+        (newCategory) => !currentCategories.includes(newCategory),
+      );
+      const categoriesToDelete = currentCategories.filter(
+        (currentCategory) => !newCategories.includes(currentCategory),
+      );
+
       return await prisma.technology.update({
         where: { id },
-        data,
+        data: {
+          ...data,
+          categories: {
+            connect: categoriesToAdd.map((category) => ({ id: category })),
+            disconnect: categoriesToDelete.map((category) => ({
+              id: category,
+            })),
+          },
+        },
         select: defaultTechnologySelect,
       });
     }),
@@ -66,13 +104,19 @@ export const technologyRouter = router({
         data: z.object({
           name: z.string().trim().min(1),
           description: z.string().trim().min(1),
+          categories: z.array(z.string().trim().uuid()),
         }),
       }),
     )
     .mutation(async ({ input }) => {
       const { data } = input;
       return await prisma.technology.create({
-        data,
+        data: {
+          ...data,
+          categories: {
+            connect: data.categories.map((category) => ({ id: category })),
+          },
+        },
         select: defaultTechnologySelect,
       });
     }),

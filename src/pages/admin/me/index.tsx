@@ -441,6 +441,7 @@ const AddSkillForm = ({
           <Autocomplete
             className="flex-grow basis-1 mr-3"
             name={`techSkills.${index}.tech`}
+            label="Technology"
             control={control}
             required
             options={technologies}

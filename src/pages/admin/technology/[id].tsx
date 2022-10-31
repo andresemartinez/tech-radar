@@ -19,6 +19,8 @@ const TechnologyAdminPage: NextPageWithLayout = () => {
     error,
   } = trpc.technology.byId.useQuery({ id });
 
+  const { data: categories } = trpc.technologyCategory.all.useQuery();
+
   const editTechnology = trpc.technology.edit.useMutation({
     async onSuccess() {
       await trpcUtils.technology.byId.invalidate();
@@ -29,10 +31,15 @@ const TechnologyAdminPage: NextPageWithLayout = () => {
     return (
       <TechnologyForm
         technology={technology}
+        categories={categories ?? []}
         onEdit={(editedTech) =>
           editTechnology.mutateAsync({
             id: editedTech.id,
-            data: { name: editedTech.name },
+            data: {
+              name: editedTech.name,
+              description: editedTech.description,
+              categories: editedTech.categories,
+            },
           })
         }
       />
