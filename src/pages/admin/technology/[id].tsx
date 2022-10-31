@@ -19,7 +19,7 @@ const TechnologyAdminPage: NextPageWithLayout = () => {
     error,
   } = trpc.technology.byId.useQuery({ id });
 
-  const { data: categories } = trpc.technologyCategory.all.useQuery();
+  const { data: categories } = trpc.techCategory.all.useQuery();
 
   const editTechnology = trpc.technology.edit.useMutation({
     async onSuccess() {

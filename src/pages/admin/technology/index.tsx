@@ -10,7 +10,7 @@ import Modal from '~/components/Modal';
 import { NextPageWithLayout } from '~/pages/_app';
 import { RouterInput, RouterOutput, trpc } from '~/utils/trpc';
 
-type Category = RouterOutput['technologyCategory']['all'][number];
+type Category = RouterOutput['techCategory']['all'][number];
 type TechCreateMutation = RouterInput['technology']['create']['data'];
 
 const TechnologyAdminPage: NextPageWithLayout = () => {
@@ -61,7 +61,7 @@ type AddTechButtonProps = {
 const AddTechButton = ({ onTechAdded }: AddTechButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
 
-  const { data: categories } = trpc.technologyCategory.all.useQuery();
+  const { data: categories } = trpc.techCategory.all.useQuery();
 
   const addTechnology = trpc.technology.create.useMutation({
     async onSuccess() {

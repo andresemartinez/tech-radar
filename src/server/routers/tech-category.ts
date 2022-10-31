@@ -4,16 +4,16 @@ import { z } from 'zod';
 import { prisma } from '~/server/prisma';
 import { privateProcedure, router } from '~/server/trpc';
 
-const defaultTechnologyCategorySelect =
+const defaultTechCategorySelect =
   Prisma.validator<Prisma.TechnologyCategorySelect>()({
     id: true,
     name: true,
   });
 
-export const technologyCategoryRouter = router({
+export const techCategoryRouter = router({
   all: privateProcedure.query(async () => {
     return prisma.technologyCategory.findMany({
-      select: defaultTechnologyCategorySelect,
+      select: defaultTechCategorySelect,
       where: { active: true },
     });
   }),
@@ -26,17 +26,17 @@ export const technologyCategoryRouter = router({
     )
     .query(async ({ input }) => {
       const { id } = input;
-      const technologyCategory = await prisma.technologyCategory.findUnique({
+      const techCategory = await prisma.technologyCategory.findUnique({
         where: { id },
-        select: defaultTechnologyCategorySelect,
+        select: defaultTechCategorySelect,
       });
-      if (!technologyCategory) {
+      if (!techCategory) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: `No technology category with id '${id}'`,
         });
       }
-      return technologyCategory;
+      return techCategory;
     }),
 
   edit: privateProcedure
@@ -53,7 +53,7 @@ export const technologyCategoryRouter = router({
       return await prisma.technologyCategory.update({
         where: { id },
         data,
-        select: defaultTechnologyCategorySelect,
+        select: defaultTechCategorySelect,
       });
     }),
 
@@ -69,7 +69,7 @@ export const technologyCategoryRouter = router({
       const { data } = input;
       return await prisma.technologyCategory.create({
         data,
-        select: defaultTechnologyCategorySelect,
+        select: defaultTechCategorySelect,
       });
     }),
 
@@ -86,7 +86,7 @@ export const technologyCategoryRouter = router({
         data: {
           active: false,
         },
-        select: defaultTechnologyCategorySelect,
+        select: defaultTechCategorySelect,
       });
     }),
 });

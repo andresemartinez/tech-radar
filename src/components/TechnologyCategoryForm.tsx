@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { RouterOutput } from '~/utils/trpc';
 import TextInput from '../components/form/TextInput';
 
-type TechnologyCategory = RouterOutput['technologyCategory']['byId'];
+type TechnologyCategory = RouterOutput['techCategory']['byId'];
 
 type TechnologyCategoryFormProps = {
   technologyCategory: TechnologyCategory;

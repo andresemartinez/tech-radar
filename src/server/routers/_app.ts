@@ -1,6 +1,6 @@
 import { chartRouter } from '~/server/routers/chart';
 import { professionalRouter } from '~/server/routers/professional';
-import { technologyCategoryRouter } from '~/server/routers/technology-category';
+import { techCategoryRouter } from '~/server/routers/tech-category';
 import { publicProcedure, router } from '~/server/trpc';
 import { techSkillRouter } from './tech-skill';
 import { techSkillLevelRouter } from './tech-skill-level';
@@ -15,7 +15,7 @@ export const appRouter = router({
   professional: professionalRouter,
   chart: chartRouter,
   technology: technologyRouter,
-  technologyCategory: technologyCategoryRouter,
+  techCategory: techCategoryRouter,
   techSkillLevel: techSkillLevelRouter,
   techSkill: techSkillRouter,
   techStats: techStatsRouter,

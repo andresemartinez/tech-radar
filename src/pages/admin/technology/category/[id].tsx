@@ -17,11 +17,11 @@ const TechnologyCategoryAdminPage: NextPageWithLayout = () => {
     data: technologyCategory,
     status,
     error,
-  } = trpc.technologyCategory.byId.useQuery({ id });
+  } = trpc.techCategory.byId.useQuery({ id });
 
-  const editTechnologyCategory = trpc.technologyCategory.edit.useMutation({
+  const editTechnologyCategory = trpc.techCategory.edit.useMutation({
     async onSuccess() {
-      await trpcUtils.technologyCategory.byId.invalidate();
+      await trpcUtils.techCategory.byId.invalidate();
     },
   });
 
