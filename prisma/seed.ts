@@ -20,6 +20,18 @@ async function main() {
     update: {},
   });
 
+  const backEndCategoryId = '362ee413-1cae-43e5-add1-b19f754396b7';
+  await prisma.technologyCategory.upsert({
+    where: {
+      id: backEndCategoryId,
+    },
+    create: {
+      id: backEndCategoryId,
+      name: 'Back-End',
+    },
+    update: {},
+  });
+
   const reactTechId = '4ced592d-da4b-4df8-9540-c9cbb606dc9e';
   await prisma.technology.upsert({
     where: {
@@ -64,10 +76,10 @@ async function main() {
     create: {
       id: springTechId,
       name: 'Spring',
-      description: "Java's favourite framework",
+      description: "Java's favorite framework",
       categories: {
         connect: {
-          id: frontEndCategoryId,
+          id: backEndCategoryId,
         },
       },
     },
