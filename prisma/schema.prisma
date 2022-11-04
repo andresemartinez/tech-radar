@@ -100,7 +100,7 @@ model TechSkillLevel {
 
 model Technology {
   id          String               @id @default(uuid())
-  name        String
+  name        String               @unique
   description String
   techSkills  TechSkill[]
   categories  TechnologyCategory[]
@@ -109,7 +109,7 @@ model Technology {
 
 model TechnologyCategory {
   id           String       @id @default(uuid())
-  name         String
+  name         String       @unique
   technologies Technology[]
   active       Boolean      @default(true)
 }
