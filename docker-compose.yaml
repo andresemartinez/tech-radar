@@ -11,5 +11,14 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_HOST_AUTH_METHOD: trust
 
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.201.0.0/16
+          gateway: 172.201.0.1
+
 volumes:
   db_data:
