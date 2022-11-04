@@ -1,18 +1,18 @@
 import {
   Category as CategoryIcon,
+  Close as CloseIcon,
+  Computer as ComputerIcon,
   Leaderboard as LeaderboardIcon,
   Menu as MenuIcon,
-  Computer as ComputerIcon,
   Person as PersonIcon,
-  Close as CloseIcon,
   Search as SearchIcon,
-  Timeline as TimelineIcon,
   SvgIconComponent,
+  Timeline as TimelineIcon,
 } from '@mui/icons-material';
 import {
   IconButton,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   SwipeableDrawer,
@@ -142,12 +142,12 @@ const AdminMenuItem = ({
 }: AdminMenuItemProps) => {
   return (
     <Link key={name} href={`/admin/${url}`} passHref>
-      <ListItem button component="a" onClick={onClick}>
+      <ListItemButton onClick={onClick}>
         <ListItemIcon>
           <Icon />
         </ListItemIcon>
         <ListItemText primary={name} />
-      </ListItem>
+      </ListItemButton>
     </Link>
   );
 };
