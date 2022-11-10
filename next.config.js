@@ -1,5 +1,7 @@
 // @ts-check
 /* eslint-disable @typescript-eslint/no-var-requires */
+const NextFederationPlugin = require('@module-federation/nextjs-mf/NextFederationPlugin');
+const path = require('path');
 const { env } = require('./src/server/env');
 
 /**
@@ -27,7 +29,18 @@ module.exports = getConfig({
     NODE_ENV: env.NODE_ENV,
   },
 
-  webpack: (config) => {
+  webpack: (config, options) => {
+    if (!options.isServer) {
+      config.plugins.push(
+        new NextFederationPlugin({
+          name: 'tech-radar',
+          remotes: {
+            app1: `app1@http://localhost:3001/moduleEntry.js`,
+          },
+        }),
+      );
+    }
+
     // camel-case style names from css modules
     config.module.rules
       .find(({ oneOf }) => !!oneOf)
@@ -42,3 +55,5 @@ module.exports = getConfig({
     return config;
   },
 });
+
+// import '@module-federation/nextjs-mf/lib/include-defaults';
