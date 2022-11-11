@@ -11,6 +11,7 @@
 import { Context } from './context';
 import { initTRPC, TRPCError } from '@trpc/server';
 import superjson from 'superjson';
+import { Role } from '@prisma/client';
 
 const t = initTRPC.context<Context>().create({
   /**
@@ -61,3 +62,19 @@ const authedMiddleware = t.middleware(({ ctx, next }) => {
 });
 
 export const privateProcedure = t.procedure.use(authedMiddleware);
+
+const adminAllowedRoles: Role[] = [Role.admin, Role.superadmin];
+export const adminProcedure = t.procedure
+  .use(authedMiddleware)
+  .use(({ ctx, next }) => {
+    const { user } = ctx;
+
+    if (user.role && !adminAllowedRoles.includes(user.role)) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'You are not authorized',
+      });
+    }
+
+    return next({ ctx: {} });
+  });
