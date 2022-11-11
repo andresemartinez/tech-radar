@@ -1,0 +1,3 @@
+{
+    "userGreeting": "Hello, {{userName}}!"
+}

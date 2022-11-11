@@ -508,7 +508,10 @@ const Divider = () => {
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const serverSideTranslation = locale
-    ? await serverSideTranslations(locale, ['button'])
+    ? await serverSideTranslations(locale, [
+        ...AdminLayout.namespacesRequired,
+        'button',
+      ])
     : {};
 
   return {

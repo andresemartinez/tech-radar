@@ -9,7 +9,7 @@ import '~/utils/chartjs';
 import { trpc } from '~/utils/trpc';
 import '../styles.css';
 
-export type NextPageWithLayout = NextPage & {
+export type NextPageWithLayout<P = Record<string, unknown>> = NextPage<P> & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
 

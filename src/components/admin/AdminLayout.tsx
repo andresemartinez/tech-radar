@@ -18,3 +18,5 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
     </>
   );
 };
+
+AdminLayout.namespacesRequired = ['admin-header'];
