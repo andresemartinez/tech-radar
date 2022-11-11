@@ -12,6 +12,9 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    signIn: ({ user }) => {
+      return user?.enabled ?? false;
+    },
     session: ({ session, user }) => {
       if (session?.user) {
         session.user.id = user.id;

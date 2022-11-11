@@ -55,6 +55,7 @@ model User {
   role          Role      @default(user)
   accounts      Account[]
   sessions      Session[]
+  enabled       Boolean   @default(true)
 }
 
 model VerificationToken {
