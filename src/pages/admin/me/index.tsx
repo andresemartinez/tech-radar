@@ -3,6 +3,7 @@ import { Button, IconButton } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
+import { useTranslation } from 'next-i18next';
 import { AdminLayout } from '~/components/admin/AdminLayout';
 import Autocomplete from '~/components/form/Autocomplete';
 import Select from '~/components/form/Select';
@@ -11,6 +12,8 @@ import Modal from '~/components/Modal';
 import ProfessionalTechRadar from '~/components/ProfessionalTechRadar';
 import { NextPageWithLayout } from '~/pages/_app';
 import { trpc } from '~/utils/trpc';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { GetStaticProps } from 'next';
 
 const ProfessionalAdminPage: NextPageWithLayout = () => {
   const trpcUtils = trpc.useContext();
@@ -80,6 +83,7 @@ type EditUserInfoButtonProps = {
 };
 
 const EditUserInfoButton = ({ id, name }: EditUserInfoButtonProps) => {
+  const { t } = useTranslation('button');
   const [modalOpen, setModalOpen] = useState(false);
 
   const editUserInfo = trpc.user.edit.useMutation({
@@ -116,9 +120,9 @@ const EditUserInfoButton = ({ id, name }: EditUserInfoButtonProps) => {
 
             <div className="flex justify-end pt-5">
               <Button className="pr-3" onClick={() => setModalOpen(false)}>
-                Cancel
+                {t('cancel')}
               </Button>
-              <Button type="submit">Save</Button>
+              <Button type="submit">{t('save')}</Button>
             </div>
           </form>
         </div>
@@ -284,6 +288,7 @@ type EditSkillButtonProps = {
 const EditSkillButton = ({ skill, onSkillEdited }: EditSkillButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const { data: techSkillLevels } = trpc.techSkillLevel.all.useQuery();
+  const { t } = useTranslation('button');
 
   const editSkills = trpc.techSkill.edit.useMutation({
     async onSuccess() {
@@ -333,9 +338,9 @@ const EditSkillButton = ({ skill, onSkillEdited }: EditSkillButtonProps) => {
 
             <div className="flex justify-end pt-5">
               <Button className="pr-3" onClick={() => setModalOpen(false)}>
-                Cancel
+                {t('cancel')}
               </Button>
-              <Button type="submit">Save</Button>
+              <Button type="submit">{t('save')}</Button>
             </div>
           </form>
         </div>
@@ -401,6 +406,7 @@ const AddSkillForm = ({
   onCancel,
   onSubmit,
 }: AddSkillFormProps) => {
+  const { t } = useTranslation('button');
   const { control, handleSubmit } = useForm<{
     techSkills: {
       tech: { id: string; name: string } | null;
@@ -481,16 +487,16 @@ const AddSkillForm = ({
           disabled={!selectedSkills.every((skill) => skill.tech && skill.level)}
           onClick={() => append({ tech: null, level: '' })}
         >
-          Add Row
+          {t('addRow')}
         </Button>
       </div>
 
       <div className="flex justify-end pt-5">
         <Button className="pr-3" onClick={onCancel}>
-          Cancel
+          {t('cancel')}
         </Button>
 
-        <Button type="submit">Save</Button>
+        <Button type="submit">{t('save')}</Button>
       </div>
     </form>
   );
@@ -498,6 +504,19 @@ const AddSkillForm = ({
 
 const Divider = () => {
   return <div className="h-[2px] my-5 bg-gray-600"></div>;
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  const serverSideTranslation = locale
+    ? await serverSideTranslations(locale, ['button'])
+    : {};
+
+  return {
+    props: {
+      ...serverSideTranslation,
+      // Will be passed to the page component as props
+    },
+  };
 };
 
 ProfessionalAdminPage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;

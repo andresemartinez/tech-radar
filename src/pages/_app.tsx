@@ -1,5 +1,6 @@
 import { NextPage } from 'next';
 import { SessionProvider } from 'next-auth/react';
+import { appWithTranslation } from 'next-i18next';
 import { AppProps } from 'next/app';
 import { AppType } from 'next/dist/shared/lib/utils';
 import { ReactElement, ReactNode } from 'react';
@@ -30,4 +31,4 @@ const MyApp = (({
   );
 }) as AppType;
 
-export default trpc.withTRPC(MyApp);
+export default trpc.withTRPC(appWithTranslation(MyApp));
