@@ -24,10 +24,10 @@ const TechnologySkillsLevelAdminPage: NextPageWithLayout = () => {
               query: { id: technologySkillLevel.id },
             }}
           >
-            <a>
+            <div>
               <span className="font-bold">{technologySkillLevel.name}</span> (
               {technologySkillLevel.weight})
-            </a>
+            </div>
           </Link>
 
           <DeleteSkillLevelButton

@@ -23,7 +23,7 @@ const TechnologyCategoriesAdminPage: NextPageWithLayout = () => {
               query: { id: technologyCategory.id },
             }}
           >
-            <a>{technologyCategory.name}</a>
+            <div>{technologyCategory.name}</div>
           </Link>
 
           <DeleteCategoryButton

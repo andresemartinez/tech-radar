@@ -27,10 +27,10 @@ const TechnologyAdminPage: NextPageWithLayout = () => {
               query: { id: technology.id },
             }}
           >
-            <a className="py-1">
+            <div className="py-1">
               <span className="font-bold">{technology.name}</span> (
               {technology.description})
-            </a>
+            </div>
           </Link>
 
           <DeleteTechButton
