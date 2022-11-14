@@ -45,7 +45,7 @@ const UsersAdminPage: NextPageWithLayout = () => {
             <span>E-Mail</span>
           </UserTableCell>
           <UserTableCell>
-            <span>Rol</span>
+            <span>Role</span>
           </UserTableCell>
           <UserTableCell>
             <span>State</span>
