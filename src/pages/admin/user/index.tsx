@@ -126,7 +126,7 @@ const UserTableRow = ({
             onSubmit={handleSubmit((data) => {
               editUserInfo.mutateAsync({
                 id: user.id,
-                data: { name: data.name, role: data.role },
+                data: { name: data.name ?? undefined, role: data.role },
               });
             })}
           >
