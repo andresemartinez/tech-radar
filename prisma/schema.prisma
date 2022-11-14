@@ -74,6 +74,8 @@ model Professional {
   creationDateTime DateTime    @default(now())
   techSkills       TechSkill[]
   active           Boolean     @default(true)
+  ownedTechRadars  TechRadar[] @relation(name: "TechRadarOwner")
+  techRadars       TechRadar[]
 
   @@index([userId])
 }
@@ -106,6 +108,7 @@ model Technology {
   techSkills  TechSkill[]
   categories  TechnologyCategory[]
   active      Boolean              @default(true)
+  techRadars  TechRadar[]
 }
 
 model TechnologyCategory {
@@ -113,4 +116,25 @@ model TechnologyCategory {
   name         String       @unique
   technologies Technology[]
   active       Boolean      @default(true)
+  techRadars   TechRadar[]
+}
+
+enum TechRadarAxisType {
+  professional
+  company
+  technology
+  category
+}
+
+model TechRadar {
+  id             String               @id @default(uuid())
+  name           String
+  owner          Professional         @relation(name: "TechRadarOwner", fields: [ownerId], references: [id])
+  ownerId        String
+  angularAxis    TechRadarAxisType
+  radialAxis     TechRadarAxisType
+  professionals  Professional[]
+  technologies   Technology[]
+  techCategories TechnologyCategory[]
+  active         Boolean              @default(true)
 }

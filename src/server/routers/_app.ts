@@ -6,6 +6,7 @@ import { techSkillRouter } from './tech-skill';
 import { techSkillLevelRouter } from './tech-skill-level';
 import { techStatsRouter } from './tech-stats';
 import { technologyRouter } from './technology';
+import { techRadarRouter } from './tech-radar';
 import { userRouter } from './user';
 
 export const appRouter = router({
@@ -19,6 +20,7 @@ export const appRouter = router({
   techSkillLevel: techSkillLevelRouter,
   techSkill: techSkillRouter,
   techStats: techStatsRouter,
+  techRadar: techRadarRouter,
 });
 
 export type AppRouter = typeof appRouter;

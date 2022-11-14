@@ -53,6 +53,42 @@ const defaultProfessionalSelect = Prisma.validator<Prisma.ProfessionalSelect>()(
 );
 
 export const professionalRouter = router({
+  all: privateProcedure.query(async () => {
+    const professionals = await prisma.professional.findMany({
+      select: {
+        id: true,
+        userId: true,
+      },
+      where: {
+        active: true,
+      },
+    });
+
+    return Promise.all(
+      professionals.map(async (professional) => {
+        const user = await prisma.user.findUnique({
+          select: {
+            name: true,
+          },
+          where: {
+            id: professional.userId,
+          },
+        });
+
+        if (user === null) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Something went wrong',
+          });
+        }
+
+        return {
+          id: professional.id,
+          name: user.name,
+        };
+      }),
+    );
+  }),
   byId: privateProcedure
     .input(
       z.object({
