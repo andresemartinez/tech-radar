@@ -22,7 +22,7 @@ const Autocomplete = <
   label,
   multiple = false,
 }: Omit<UseControllerProps<TFieldValues>, 'rules'> & {
-  className: string;
+  className?: string;
   required: boolean;
   label: string;
   multiple?: boolean;
