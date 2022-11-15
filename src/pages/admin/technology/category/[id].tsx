@@ -1,3 +1,5 @@
+import { GetStaticProps } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import NextError from 'next/error';
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
@@ -47,6 +49,21 @@ const TechnologyCategoryAdminPage: NextPageWithLayout = () => {
   } else {
     return null;
   }
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  const serverSideTranslation = locale
+    ? await serverSideTranslations(locale, [
+        ...AdminLayout.namespacesRequired,
+        'button',
+      ])
+    : {};
+
+  return {
+    props: {
+      ...serverSideTranslation,
+    },
+  };
 };
 
 TechnologyCategoryAdminPage.getLayout = (page) => (

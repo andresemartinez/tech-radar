@@ -1,5 +1,7 @@
 import { Close as CloseIcon } from '@mui/icons-material';
 import { Button, IconButton } from '@mui/material';
+import { GetStaticProps } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Link from 'next/link';
 import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -208,6 +210,21 @@ const DeleteTechButton = ({
       </Modal>
     </>
   );
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  const serverSideTranslation = locale
+    ? await serverSideTranslations(locale, [
+        ...AdminLayout.namespacesRequired,
+        'button',
+      ])
+    : {};
+
+  return {
+    props: {
+      ...serverSideTranslation,
+    },
+  };
 };
 
 TechnologyAdminPage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;

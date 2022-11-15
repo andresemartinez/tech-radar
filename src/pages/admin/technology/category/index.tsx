@@ -8,6 +8,8 @@ import TextInput from '~/components/form/TextInput';
 import Modal from '~/components/Modal';
 import { NextPageWithLayout } from '~/pages/_app';
 import { trpc } from '~/utils/trpc';
+import { GetStaticProps } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const TechnologyCategoriesAdminPage: NextPageWithLayout = () => {
   const trpcUtils = trpc.useContext();
@@ -166,6 +168,21 @@ const DeleteCategoryButton = ({
       </Modal>
     </>
   );
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  const serverSideTranslation = locale
+    ? await serverSideTranslations(locale, [
+        ...AdminLayout.namespacesRequired,
+        'button',
+      ])
+    : {};
+
+  return {
+    props: {
+      ...serverSideTranslation,
+    },
+  };
 };
 
 TechnologyCategoriesAdminPage.getLayout = (page) => (

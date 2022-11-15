@@ -24,7 +24,7 @@ const Autocomplete = <
 }: Omit<UseControllerProps<TFieldValues>, 'rules'> & {
   className?: string;
   required: boolean;
-  label: string;
+  label?: string;
   multiple?: boolean;
   options: ReadonlyArray<T>;
   filterOptions?: (options: T[], state: FilterOptionsState<T>) => T[];

@@ -1,5 +1,7 @@
 import { Button } from '@mui/material';
 import { ChartOptions } from 'chart.js';
+import { GetStaticProps } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useMemo, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { useForm } from 'react-hook-form';
@@ -141,6 +143,21 @@ const TechTrendChart = ({ query }: TechTrendChartProps) => {
   );
 
   return <>{techTrend && <Line data={techTrend.data} options={options} />}</>;
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  const serverSideTranslation = locale
+    ? await serverSideTranslations(locale, [
+        ...AdminLayout.namespacesRequired,
+        'button',
+      ])
+    : {};
+
+  return {
+    props: {
+      ...serverSideTranslation,
+    },
+  };
 };
 
 TechStatsAdminPage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;

@@ -9,6 +9,8 @@ import { OperationKey } from '~/server/routers/professional';
 import { RouterInput, RouterOutput, trpc } from '~/utils/trpc';
 import Modal from '~/components/Modal';
 import ProfessionalTechRadar from '~/components/ProfessionalTechRadar';
+import { GetStaticProps } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 type ProfessionalsSearchQuery = RouterInput['professional']['search'];
 type ProfessionalsSearchResult = RouterOutput['professional']['search'];
@@ -254,6 +256,21 @@ const ProfessionalRow = ({ professional, onClick }: ProfessionalRowProps) => {
       </div>
     </div>
   );
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  const serverSideTranslation = locale
+    ? await serverSideTranslations(locale, [
+        ...AdminLayout.namespacesRequired,
+        'button',
+      ])
+    : {};
+
+  return {
+    props: {
+      ...serverSideTranslation,
+    },
+  };
 };
 
 SearchAdminPage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;

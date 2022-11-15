@@ -9,6 +9,8 @@ import Modal from '~/components/Modal';
 import { NextPageWithLayout } from '~/pages/_app';
 import { trpc } from '~/utils/trpc';
 import NumberInput from '~/components/form/NumberInput';
+import { GetStaticProps } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const TechnologySkillsLevelAdminPage: NextPageWithLayout = () => {
   const trpcUtils = trpc.useContext();
@@ -185,6 +187,21 @@ const DeleteSkillLevelButton = ({
       </Modal>
     </>
   );
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  const serverSideTranslation = locale
+    ? await serverSideTranslations(locale, [
+        ...AdminLayout.namespacesRequired,
+        'button',
+      ])
+    : {};
+
+  return {
+    props: {
+      ...serverSideTranslation,
+    },
+  };
 };
 
 TechnologySkillsLevelAdminPage.getLayout = (page) => (
