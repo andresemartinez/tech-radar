@@ -1,4 +1,5 @@
-import { Button } from '@mui/material';
+import { Close as CloseIcon } from '@mui/icons-material';
+import { Button, IconButton } from '@mui/material';
 import {
   TechRadarAngularAxisType,
   TechRadarRadialAxisType,
@@ -53,14 +54,78 @@ const TechRadarTableRow = ({ techRadar }: TechRadarTableRowProps) => {
 
   return (
     <>
-      <div className="flex flex-row" onClick={() => setModalOpen(true)}>
-        <div className="pr-2">{techRadar.name}</div>
-        <div className="pl-2">{techRadar.owner}</div>
+      <div className="flex flex-row">
+        <div className="flex flex-row" onClick={() => setModalOpen(true)}>
+          <div className="pr-2">{techRadar.name}</div>
+          <div className="px-2">{techRadar.owner}</div>
+        </div>
+        <div className="pl-2">
+          <DeleteTechRadarButton
+            id={techRadar.id}
+            name={techRadar.name}
+            owner={techRadar.owner}
+          />
+        </div>
       </div>
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="w-[600px] px-[20px] py-[40px]">
           <Radar data={techRadarDataset.data ?? { labels: [], datasets: [] }} />
+        </div>
+      </Modal>
+    </>
+  );
+};
+
+type DeleteTechRadarButtonProps = {
+  id: TechRadar['id'];
+  name: TechRadar['name'];
+  owner: TechRadar['owner'];
+};
+
+const DeleteTechRadarButton = ({
+  id,
+  name,
+  owner,
+}: DeleteTechRadarButtonProps) => {
+  const trpcUtils = trpc.useContext();
+  const [modalOpen, setModalOpen] = useState(false);
+  const removeTechRadar = trpc.techRadar.delete.useMutation({
+    async onSuccess() {
+      trpcUtils.techRadar.invalidate();
+    },
+  });
+
+  return (
+    <>
+      <IconButton onClick={() => setModalOpen(true)} size="small">
+        <CloseIcon />
+      </IconButton>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <div className="w-[400px] px-[20px]">
+          <div className="flex py-4">
+            <span className="text-lg font-bold">
+              {name} by {owner}
+            </span>
+          </div>
+
+          <div className="flex justify-center py-2">
+            <span>Are you sure you want to delete this tech radar?</span>
+          </div>
+
+          <div className="flex justify-end pt-4 pb-2">
+            <Button className="pr-3" onClick={() => setModalOpen(false)}>
+              No
+            </Button>
+            <Button
+              onClick={() => {
+                removeTechRadar.mutateAsync({ id });
+                setModalOpen(false);
+              }}
+            >
+              Yes
+            </Button>
+          </div>
         </div>
       </Modal>
     </>

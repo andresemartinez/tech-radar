@@ -150,4 +150,21 @@ export const techRadarRouter = router({
         },
       });
     }),
+  delete: privateProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const { id } = input;
+      await prisma.techRadar.update({
+        data: {
+          active: false,
+        },
+        where: {
+          id,
+        },
+      });
+    }),
 });
