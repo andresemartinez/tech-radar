@@ -1,5 +1,9 @@
 {
-    "addRow": "Add Row",
-    "cancel": "Cancel",
-    "save": "Save"
+  "addRow": "Add Row",
+  "cancel": "Cancel",
+  "save": "Save",
+  "yes": "Yes",
+  "no": "No",
+  "disable": "Disable",
+  "enable": "Enable"
 }

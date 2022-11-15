@@ -1,5 +1,9 @@
 {
-    "addRow": "Agregar Fila",
-    "cancel": "Cancelar",
-    "save": "Guardar"
+  "addRow": "Agregar Fila",
+  "cancel": "Cancelar",
+  "save": "Guardar",
+  "yes": "Si",
+  "no": "No",
+  "disable": "Deshabilitar",
+  "enable": "Habilitar"
 }

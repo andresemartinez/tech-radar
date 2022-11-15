@@ -1,6 +1,7 @@
 import { Close as CloseIcon } from '@mui/icons-material';
 import { Button, IconButton } from '@mui/material';
 import { GetStaticProps } from 'next';
+import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Link from 'next/link';
 import { useCallback, useState } from 'react';
@@ -102,6 +103,7 @@ type AddTechFormProps = {
 };
 
 const AddTechForm = ({ categories, onCancel, onSubmit }: AddTechFormProps) => {
+  const { t } = useTranslation('button');
   const { control, handleSubmit } = useForm<{
     name: string;
     description: string;
@@ -151,10 +153,10 @@ const AddTechForm = ({ categories, onCancel, onSubmit }: AddTechFormProps) => {
 
       <div className="flex justify-end pt-5">
         <Button className="pr-3" onClick={onCancel}>
-          Cancel
+          {t('cancel')}
         </Button>
 
-        <Button type="submit">Save</Button>
+        <Button type="submit">{t('save')}</Button>
       </div>
     </form>
   );

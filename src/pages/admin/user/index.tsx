@@ -5,6 +5,7 @@ import {
 import { Button, IconButton, Tooltip } from '@mui/material';
 import { Role } from '@prisma/client';
 import { GetStaticProps } from 'next';
+import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -75,6 +76,7 @@ const UserTableRow = ({
   onEnableClick,
   onDisableClick,
 }: UserTableRowProps) => {
+  const { t } = useTranslation('button');
   const trpcUtils = trpc.useContext();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -156,20 +158,20 @@ const UserTableRow = ({
               <div>
                 {user.enabled ? (
                   <Button color="error" onClick={onDisableClick}>
-                    Disable
+                    {t('disable')}
                   </Button>
                 ) : (
                   <Button color="success" onClick={onEnableClick}>
-                    Enable
+                    {t('enable')}
                   </Button>
                 )}
               </div>
 
               <div className="flex justify-end">
                 <Button className="pr-3" onClick={() => setModalOpen(false)}>
-                  Cancel
+                  {t('cancel')}
                 </Button>
-                <Button type="submit">Save</Button>
+                <Button type="submit">{t('save')}</Button>
               </div>
             </div>
           </form>

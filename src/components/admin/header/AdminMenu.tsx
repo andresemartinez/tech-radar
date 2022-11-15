@@ -9,6 +9,7 @@ import {
   SvgIconComponent,
   Timeline as TimelineIcon,
   People as PeopleIcon,
+  Radar as RadarIcon,
 } from '@mui/icons-material';
 import {
   IconButton,
@@ -66,6 +67,12 @@ const AdminMenu = () => {
                 name: 'Tech stats',
                 icon: TimelineIcon,
                 url: 'technology/stats',
+                onClick: defaultOnClick,
+              },
+              {
+                name: 'Tech radars',
+                icon: RadarIcon,
+                url: 'tech-radar',
                 onClick: defaultOnClick,
               },
             ],

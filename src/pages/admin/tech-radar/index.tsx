@@ -6,6 +6,7 @@ import {
 } from '@prisma/client';
 import { GetStaticProps } from 'next';
 import { useSession } from 'next-auth/react';
+import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useState } from 'react';
 import { Radar } from 'react-chartjs-2';
@@ -185,6 +186,7 @@ const CreateTechRadarForm = ({
   onCancel,
   onSubmit,
 }: CreateTechRadarFormProps) => {
+  const { t } = useTranslation('button');
   const { data: session } = useSession();
   const { data: professional } = trpc.professional.byUserId.useQuery(
     {
@@ -330,9 +332,9 @@ const CreateTechRadarForm = ({
 
       <div className="flex justify-end pt-5">
         <Button className="pr-3" onClick={onCancel}>
-          Cancel
+          {t('cancel')}
         </Button>
-        <Button type="submit">Save</Button>
+        <Button type="submit">{t('save')}</Button>
       </div>
     </form>
   );

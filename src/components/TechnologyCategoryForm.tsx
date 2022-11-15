@@ -1,4 +1,5 @@
 import { Button } from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import { useForm } from 'react-hook-form';
 import { RouterOutput } from '~/utils/trpc';
 import TextInput from '../components/form/TextInput';
@@ -14,6 +15,7 @@ const TechnologyCategoryForm = ({
   technologyCategory,
   onEdit,
 }: TechnologyCategoryFormProps) => {
+  const { t } = useTranslation('button');
   const { control, handleSubmit } = useForm({
     defaultValues: {
       name: technologyCategory.name,
@@ -42,7 +44,7 @@ const TechnologyCategoryForm = ({
 
         <div>
           <Button className="ml-2" type="submit">
-            Save
+            {t('save')}
           </Button>
         </div>
       </div>

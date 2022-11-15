@@ -1,4 +1,5 @@
 import { Button } from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import { useForm } from 'react-hook-form';
 import { RouterOutput } from '~/utils/trpc';
 import NumberInput from './form/NumberInput';
@@ -15,6 +16,7 @@ const TechnologySkillLevelForm = ({
   technologySkillLevel,
   onEdit,
 }: TechnologySkillLevelFormProps) => {
+  const { t } = useTranslation('button');
   const { control, handleSubmit } = useForm({
     defaultValues: {
       name: technologySkillLevel.name,
@@ -55,7 +57,7 @@ const TechnologySkillLevelForm = ({
 
         <div>
           <Button className="ml-2" type="submit">
-            Save
+            {t('save')}
           </Button>
         </div>
       </div>

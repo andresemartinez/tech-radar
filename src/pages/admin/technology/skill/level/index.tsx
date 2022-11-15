@@ -11,6 +11,7 @@ import { trpc } from '~/utils/trpc';
 import NumberInput from '~/components/form/NumberInput';
 import { GetStaticProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 const TechnologySkillsLevelAdminPage: NextPageWithLayout = () => {
   const trpcUtils = trpc.useContext();
@@ -97,6 +98,7 @@ type AddSkillLevelFormProps = {
 };
 
 const AddSkillLevelForm = ({ onCancel, onSubmit }: AddSkillLevelFormProps) => {
+  const { t } = useTranslation('button');
   const { control, handleSubmit } = useForm<{
     name: string;
     weight: string;
@@ -128,10 +130,10 @@ const AddSkillLevelForm = ({ onCancel, onSubmit }: AddSkillLevelFormProps) => {
 
       <div className="flex justify-end pt-5">
         <Button className="pr-3" onClick={onCancel}>
-          Cancel
+          {t('cancel')}
         </Button>
 
-        <Button type="submit">Save</Button>
+        <Button type="submit">{t('save')}</Button>
       </div>
     </form>
   );
