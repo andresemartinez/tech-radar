@@ -1,19 +1,59 @@
+import {
+  TechRadarAngularAxisType,
+  TechRadarRadialAxisType,
+} from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { prisma } from '~/server/prisma';
 import { privateProcedure, router } from '~/server/trpc';
-import { TechRadarAxisType } from '@prisma/client';
 
 export const techRadarRouter = router({
+  all: privateProcedure.query(async () => {
+    const techRadars = await prisma.techRadar.findMany({
+      select: {
+        id: true,
+        name: true,
+        owner: {
+          select: {
+            id: true,
+            userId: true,
+          },
+        },
+      },
+      where: {
+        active: true,
+      },
+    });
+
+    return Promise.all(
+      techRadars.map(async (techRadar) => {
+        const user = await prisma.user.findUnique({
+          select: { name: true },
+          where: { id: techRadar.owner.userId },
+        });
+
+        if (user === null) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Something went wrong',
+          });
+        }
+
+        return {
+          ...techRadar,
+          owner: user.name,
+        };
+      }),
+    );
+  }),
   byId: privateProcedure
     .input(
       z.object({
         id: z.string().uuid(),
       }),
     )
-    .query(async ({ input, ctx }) => {
+    .query(async ({ input }) => {
       const { id } = input;
-      const { user } = ctx;
 
       const techRadar = await prisma.techRadar.findUnique({
         select: {
@@ -66,13 +106,6 @@ export const techRadarRouter = router({
         });
       }
 
-      if (techRadar.owner.userId !== user.id) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'You are not authorized',
-        });
-      }
-
       return techRadar;
     }),
   create: privateProcedure
@@ -81,8 +114,8 @@ export const techRadarRouter = router({
         data: z.object({
           name: z.string().min(1),
           owner: z.string().uuid(),
-          angularAxis: z.nativeEnum(TechRadarAxisType),
-          radialAxis: z.nativeEnum(TechRadarAxisType),
+          angularAxis: z.nativeEnum(TechRadarAngularAxisType),
+          radialAxis: z.nativeEnum(TechRadarRadialAxisType),
           professionals: z.array(z.string().uuid()),
           technologies: z.array(z.string().uuid()),
           techCategories: z.array(z.string().uuid()),

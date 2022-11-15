@@ -1,20 +1,30 @@
 import { z } from 'zod';
 import {
-  professionalTechRadarDataset as professionalTechRadar,
-  techRadarDataset as techRadar,
+  defaultTechRadarDataset,
+  professionalTechRadarDataset,
+  techRadarDataset,
 } from '~/server/services/tech-radar';
 import { publicProcedure, router } from '~/server/trpc';
 
 export const chartRouter = router({
-  techRadar: publicProcedure.query(() => techRadar()),
-  techRadarByProfessional: publicProcedure
-    .input(
-      z.object({
-        id: z.string(),
+  techRadar: router({
+    default: publicProcedure.query(() => defaultTechRadarDataset()),
+    byId: publicProcedure
+      .input(
+        z.object({
+          id: z.string().uuid(),
+        }),
+      )
+      .query(({ input }) => techRadarDataset(input.id)),
+    byProfessional: publicProcedure
+      .input(
+        z.object({
+          id: z.string(),
+        }),
+      )
+      .query(({ input }) => {
+        const { id } = input;
+        return professionalTechRadarDataset(id);
       }),
-    )
-    .query(({ input }) => {
-      const { id } = input;
-      return professionalTechRadar(id);
-    }),
+  }),
 });

@@ -13,7 +13,7 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     signIn: ({ user }) => {
-      return user?.enabled ?? false;
+      return user?.enabled ?? true;
     },
     session: ({ session, user }) => {
       if (session?.user) {

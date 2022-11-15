@@ -8,7 +8,7 @@ type ProfessionalRadarProps = {
 
 const ProfessionalTechRadar = ({ id, size }: ProfessionalRadarProps) => {
   const { data: techRadarDataset } =
-    trpc.chart.techRadarByProfessional.useQuery({ id });
+    trpc.chart.techRadar.byProfessional.useQuery({ id });
 
   return (
     <div className={`h-[${size}px] w-[${size}px]`}>

@@ -1,30 +1,52 @@
 import { Button } from '@mui/material';
-import { TechRadarAxisType } from '@prisma/client';
+import {
+  TechRadarAngularAxisType,
+  TechRadarRadialAxisType,
+} from '@prisma/client';
 import { GetStaticProps } from 'next';
+import { useSession } from 'next-auth/react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useState } from 'react';
+import { Radar } from 'react-chartjs-2';
 import { useForm, useWatch } from 'react-hook-form';
 import { AdminLayout } from '~/components/admin/AdminLayout';
 import Autocomplete from '~/components/form/Autocomplete';
 import TextInput from '~/components/form/TextInput';
 import Modal from '~/components/Modal';
 import { NextPageWithLayout } from '~/pages/_app';
-import { RouterInput, trpc } from '~/utils/trpc';
+import { RouterInput, RouterOutput, trpc } from '~/utils/trpc';
 
 type TechRadarCreateMutation = RouterInput['techRadar']['create']['data'];
+type TechRadar = RouterOutput['techRadar']['all'][number];
 
-const formFieldByAxisType: {
-  [key in Exclude<TechRadarAxisType, 'company'>]: keyof TechRadarCreateMutation;
+const formFieldByAngularAxisType: {
+  [key in TechRadarAngularAxisType]: keyof TechRadarCreateMutation;
 } = {
-  [TechRadarAxisType.category]: 'techCategories',
-  [TechRadarAxisType.professional]: 'professionals',
-  [TechRadarAxisType.technology]: 'technologies',
+  [TechRadarAngularAxisType.category]: 'techCategories',
+  [TechRadarAngularAxisType.technology]: 'technologies',
+};
+
+const formFieldByRadialAxisType: {
+  [key in Exclude<
+    TechRadarRadialAxisType,
+    'company'
+  >]: keyof TechRadarCreateMutation;
+} = {
+  [TechRadarRadialAxisType.professional]: 'professionals',
 };
 
 const TechRadarAdminPage: NextPageWithLayout = () => {
+  const { data: session } = useSession();
   const trpcUtils = trpc.useContext();
   const [modalOpen, setModalOpen] = useState(false);
 
+  const { data: professional } = trpc.professional.byUserId.useQuery(
+    {
+      userId: session?.user?.id ?? '',
+    },
+    { enabled: Boolean(session?.user?.id) },
+  );
+  const { data: techRadars } = trpc.techRadar.all.useQuery();
   const { data: technologies } = trpc.technology.all.useQuery();
   const { data: categories } = trpc.techCategory.all.useQuery();
   const { data: professionals } = trpc.professional.all.useQuery();
@@ -35,7 +57,15 @@ const TechRadarAdminPage: NextPageWithLayout = () => {
     },
   });
 
-  const { control, handleSubmit } = useForm<TechRadarCreateMutation>({
+  const { control, handleSubmit } = useForm<{
+    name: string;
+    technologies: { id: string; name: string }[];
+    owner: string;
+    angularAxis: TechRadarAngularAxisType;
+    radialAxis: TechRadarRadialAxisType;
+    professionals: { id: string; name: string }[];
+    techCategories: { id: string; name: string }[];
+  }>({
     defaultValues: {
       professionals: [],
       techCategories: [],
@@ -43,17 +73,22 @@ const TechRadarAdminPage: NextPageWithLayout = () => {
     },
   });
 
-  const angularAxisType = useWatch<TechRadarAxisType>({
+  const angularAxisType = useWatch<TechRadarAngularAxisType>({
     control,
     name: 'angularAxis',
   });
-  const radialAxisType = useWatch<TechRadarAxisType>({
+  const radialAxisType = useWatch<TechRadarRadialAxisType>({
     control,
     name: 'radialAxis',
   });
 
   return (
     <>
+      <div className="flex flex-col">
+        {techRadars?.map((techRadar) => (
+          <TechRadarTableRow key={techRadar.id} techRadar={techRadar} />
+        ))}
+      </div>
       <div>
         <Button onClick={() => setModalOpen(true)}>Create Tech Radar</Button>
       </div>
@@ -63,7 +98,19 @@ const TechRadarAdminPage: NextPageWithLayout = () => {
           <form
             onSubmit={handleSubmit((data) => {
               createTechRadar.mutateAsync({
-                data,
+                data: {
+                  ...data,
+                  owner: professional?.id ?? '',
+                  professionals: data.professionals.map(
+                    (professional) => professional.id,
+                  ),
+                  technologies: data.technologies.map(
+                    (technology) => technology.id,
+                  ),
+                  techCategories: data.techCategories.map(
+                    (techCategory) => techCategory.id,
+                  ),
+                },
               });
             })}
           >
@@ -79,7 +126,7 @@ const TechRadarAdminPage: NextPageWithLayout = () => {
                     label="Angular Axis"
                     control={control}
                     required
-                    options={Object.values(TechRadarAxisType)}
+                    options={Object.values(TechRadarAngularAxisType)}
                     getOptionLabel={(option) =>
                       `${option
                         .substring(0, 1)
@@ -89,21 +136,17 @@ const TechRadarAdminPage: NextPageWithLayout = () => {
                   />
 
                   {categories !== undefined &&
-                    professionals !== undefined &&
                     technologies !== undefined &&
-                    angularAxisType !== undefined &&
-                    angularAxisType !== TechRadarAxisType.company && (
+                    angularAxisType !== undefined && (
                       <Autocomplete
-                        name={formFieldByAxisType[angularAxisType]}
+                        name={formFieldByAngularAxisType[angularAxisType]}
                         label="Blah"
                         control={control}
                         required
                         multiple
                         options={
-                          angularAxisType === TechRadarAxisType.category
+                          angularAxisType === TechRadarAngularAxisType.category
                             ? categories
-                            : angularAxisType === TechRadarAxisType.professional
-                            ? professionals
                             : technologies
                         }
                         getOptionLabel={(option) => option.name ?? ''}
@@ -120,7 +163,7 @@ const TechRadarAdminPage: NextPageWithLayout = () => {
                     label="Radial Axis"
                     control={control}
                     required
-                    options={Object.values(TechRadarAxisType)}
+                    options={Object.values(TechRadarRadialAxisType)}
                     getOptionLabel={(option) =>
                       `${option
                         .substring(0, 1)
@@ -129,24 +172,16 @@ const TechRadarAdminPage: NextPageWithLayout = () => {
                     isOptionEqualToValue={(option, value) => option === value}
                   />
 
-                  {categories !== undefined &&
-                    professionals !== undefined &&
-                    technologies !== undefined &&
+                  {professionals !== undefined &&
                     radialAxisType !== undefined &&
-                    radialAxisType !== TechRadarAxisType.company && (
+                    radialAxisType !== TechRadarRadialAxisType.company && (
                       <Autocomplete
-                        name={formFieldByAxisType[radialAxisType]}
-                        label="Bleh"
+                        name={formFieldByRadialAxisType[radialAxisType]}
+                        label="Professionals"
                         control={control}
                         required
                         multiple
-                        options={
-                          radialAxisType === TechRadarAxisType.category
-                            ? categories
-                            : radialAxisType === TechRadarAxisType.professional
-                            ? professionals
-                            : technologies
-                        }
+                        options={professionals}
                         getOptionLabel={(option) => option.name ?? ''}
                         isOptionEqualToValue={(option, value) =>
                           option.id === value.id
@@ -164,6 +199,34 @@ const TechRadarAdminPage: NextPageWithLayout = () => {
               <Button type="submit">Save</Button>
             </div>
           </form>
+        </div>
+      </Modal>
+    </>
+  );
+};
+
+type TechRadarTableRowProps = {
+  techRadar: TechRadar;
+};
+
+const TechRadarTableRow = ({ techRadar }: TechRadarTableRowProps) => {
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const techRadarDataset = trpc.chart.techRadar.byId.useQuery(
+    { id: techRadar.id },
+    { enabled: modalOpen },
+  );
+
+  return (
+    <>
+      <div className="flex flex-row" onClick={() => setModalOpen(true)}>
+        <div>{techRadar.name}</div>
+        <div>{techRadar.owner}</div>
+      </div>
+
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <div className="w-[600px] px-[20px] py-[40px]">
+          <Radar data={techRadarDataset.data ?? { labels: [], datasets: [] }} />
         </div>
       </Modal>
     </>

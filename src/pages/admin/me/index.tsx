@@ -39,15 +39,15 @@ const ProfessionalAdminPage: NextPageWithLayout = () => {
           skills={professional.techSkills}
           onSkillAdded={() => {
             trpcUtils.professional.byUserId.invalidate();
-            trpcUtils.chart.techRadarByProfessional.invalidate();
+            trpcUtils.chart.techRadar.byProfessional.invalidate();
           }}
           onSkillEdited={() => {
             trpcUtils.professional.byUserId.invalidate();
-            trpcUtils.chart.techRadarByProfessional.invalidate();
+            trpcUtils.chart.techRadar.byProfessional.invalidate();
           }}
           onSkillDeleted={() => {
             trpcUtils.professional.byUserId.invalidate();
-            trpcUtils.chart.techRadarByProfessional.invalidate();
+            trpcUtils.chart.techRadar.byProfessional.invalidate();
           }}
         />
       )}

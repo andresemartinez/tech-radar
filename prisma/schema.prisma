@@ -47,15 +47,16 @@ enum Role {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String        @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?       @unique
   emailVerified DateTime?
   image         String?
-  role          Role      @default(user)
+  role          Role          @default(user)
   accounts      Account[]
   sessions      Session[]
-  enabled       Boolean   @default(true)
+  enabled       Boolean       @default(true)
+  professional  Professional?
 }
 
 model VerificationToken {
@@ -70,6 +71,7 @@ model VerificationToken {
 
 model Professional {
   id               String      @id @default(uuid())
+  user             User        @relation(fields: [userId], references: [id])
   userId           String      @unique
   creationDateTime DateTime    @default(now())
   techSkills       TechSkill[]
@@ -119,11 +121,14 @@ model TechnologyCategory {
   techRadars   TechRadar[]
 }
 
-enum TechRadarAxisType {
-  professional
-  company
+enum TechRadarAngularAxisType {
   technology
   category
+}
+
+enum TechRadarRadialAxisType {
+  professional
+  company
 }
 
 model TechRadar {
@@ -131,8 +136,8 @@ model TechRadar {
   name           String
   owner          Professional         @relation(name: "TechRadarOwner", fields: [ownerId], references: [id])
   ownerId        String
-  angularAxis    TechRadarAxisType
-  radialAxis     TechRadarAxisType
+  angularAxis    TechRadarAngularAxisType
+  radialAxis     TechRadarRadialAxisType
   professionals  Professional[]
   technologies   Technology[]
   techCategories TechnologyCategory[]
