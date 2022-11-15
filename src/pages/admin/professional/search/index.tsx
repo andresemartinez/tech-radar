@@ -11,6 +11,7 @@ import Modal from '~/components/Modal';
 import ProfessionalTechRadar from '~/components/ProfessionalTechRadar';
 import { GetStaticProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 type ProfessionalsSearchQuery = RouterInput['professional']['search'];
 type ProfessionalsSearchResult = RouterOutput['professional']['search'];
@@ -60,6 +61,8 @@ const SearchForm = ({
   operators,
   onSearch,
 }: SearchFormProps) => {
+  const { t: tc } = useTranslation();
+  const { t: tb } = useTranslation('button');
   const { control, handleSubmit } = useForm<{
     techSkills: {
       tech: { id: string; name: string } | null;
@@ -103,6 +106,7 @@ const SearchForm = ({
             <Autocomplete
               className="flex-grow basis-1 mr-3"
               name={`techSkills.${index}.tech`}
+              label={tc('technology')}
               control={control}
               required
               options={technologies}
@@ -120,6 +124,7 @@ const SearchForm = ({
             <Autocomplete
               className="flex-grow basis-1 mr-3"
               name={`techSkills.${index}.operator`}
+              label={tc('operator')}
               control={control}
               required
               options={operators}
@@ -130,6 +135,7 @@ const SearchForm = ({
             <Autocomplete
               className="flex-grow basis-1 mr-3"
               name={`techSkills.${index}.level`}
+              label={tc('techSkillLevel_short')}
               control={control}
               required
               options={levels}
@@ -153,12 +159,12 @@ const SearchForm = ({
           disabled={!selectedSkills.every((skill) => skill.tech && skill.level)}
           onClick={() => append({ tech: null, level: null, operator: null })}
         >
-          Add Criteria
+          {tb('addCriteria')}
         </Button>
       </div>
 
       <div className="flex justify-start pt-5">
-        <Button type="submit">Search</Button>
+        <Button type="submit">{tb('search')}</Button>
       </div>
     </form>
   );
@@ -262,6 +268,7 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const serverSideTranslation = locale
     ? await serverSideTranslations(locale, [
         ...AdminLayout.namespacesRequired,
+        'common',
         'button',
       ])
     : {};

@@ -1,1 +1,23 @@
-{}
+{
+  "name": "Nombre",
+  "email": "E-Mail",
+  "skill": "Hablidad",
+  "skill_one": "Hablidad",
+  "skill_other": "Hablidades",
+  "techSkill": "Hablidad technologica",
+  "techSkill_one": "Hablidad technologica",
+  "techSkill_other": "Hablidades technologicas",
+  "category": "Categoria",
+  "category_one": "Categoria",
+  "category_other": "Categorias",
+  "professional": "Profesional",
+  "professional_one": "Profesional",
+  "professional_other": "Profesionales",
+  "technology": "Tecnologia",
+  "technology_one": "Tecnologias",
+  "technology_other": "Tecnologias",
+  "techSkillLevel": "Nivel de habilidad technologia",
+  "techSkillLevel_short": "Nivel",
+  "operator": "Operador",
+  "percentage": "Porcentage"
+}

@@ -1,3 +1,11 @@
 {
-  "userGreeting": "Hola, {{userName}}!"
+  "userGreeting": "Hola, {{userName}}!",
+  "me": "Yo",
+  "professionalsSearch": "Busqueda de profesionales",
+  "techStats": "Estadisticas tecnologias",
+  "techRadars": "Radares tecnologicos",
+  "technologies": "Tecnologias",
+  "categories": "Categorias",
+  "skillLevels": "Niveles de habilidad tecnologica",
+  "users": "Usuarios"
 }

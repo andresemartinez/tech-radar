@@ -1,3 +1,11 @@
 {
-  "userGreeting": "Hello, {{userName}}!"
+  "userGreeting": "Hello, {{userName}}!",
+  "me": "Me",
+  "professionalsSearch": "Professionals Search",
+  "techStats": "Tech Stats",
+  "techRadars": "Tech Radars",
+  "technologies": "Technologies",
+  "categories": "Categories",
+  "skillLevels": "Skill Levels",
+  "users": "Users"
 }

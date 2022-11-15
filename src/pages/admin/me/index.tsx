@@ -62,15 +62,16 @@ type UserInfoProps = {
 };
 
 const UserInfo = ({ id, name, email }: UserInfoProps) => {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col">
       <div className="pb-3">
-        <span className="font-bold">Name: </span>
+        <span className="font-bold">{t('name')}: </span>
         <span>{name}</span>
         {id && name && <EditUserInfoButton id={id} name={name} />}
       </div>
       <div>
-        <span className="font-bold">E-mail: </span>
+        <span className="font-bold">{t('email')}: </span>
         <span>{email}</span>
       </div>
     </div>
@@ -156,9 +157,10 @@ const ProfessionalSkills = ({
   onSkillDeleted,
   onSkillEdited,
 }: ProfessionalSkillsProps) => {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col">
-      <span className="font-bold">Skills</span>
+      <span className="font-bold">{t('skill')}</span>
       {skills.length <= 0 && <span>No skills registered yet!</span>}
       {skills.map((skill) => (
         <TechSkill
@@ -227,6 +229,8 @@ const DeleteSkillButton = ({
   level,
   onSkillDeleted,
 }: DeleteSkillButtonProps) => {
+  const { t: tb } = useTranslation('button');
+  const { t: td } = useTranslation('dialog');
   const [modalOpen, setModalOpen] = useState(false);
   const removeSkills = trpc.techSkill.delete.useMutation({
     async onSuccess() {
@@ -248,12 +252,12 @@ const DeleteSkillButton = ({
           </div>
 
           <div className="flex justify-center py-2">
-            <span>Are you sure you want to delete this skill?</span>
+            <span>{td('deleteTechSkillConfirmation')}</span>
           </div>
 
           <div className="flex justify-end pt-4 pb-2">
             <Button className="pr-3" onClick={() => setModalOpen(false)}>
-              No
+              {tb('no')}
             </Button>
             <Button
               onClick={() => {
@@ -261,7 +265,7 @@ const DeleteSkillButton = ({
                 setModalOpen(false);
               }}
             >
-              Yes
+              {tb('yes')}
             </Button>
           </div>
         </div>
@@ -288,7 +292,8 @@ type EditSkillButtonProps = {
 const EditSkillButton = ({ skill, onSkillEdited }: EditSkillButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const { data: techSkillLevels } = trpc.techSkillLevel.all.useQuery();
-  const { t } = useTranslation('button');
+  const { t: tc } = useTranslation();
+  const { t: tb } = useTranslation('button');
 
   const editSkills = trpc.techSkill.edit.useMutation({
     async onSuccess() {
@@ -326,8 +331,9 @@ const EditSkillButton = ({ skill, onSkillEdited }: EditSkillButtonProps) => {
               <span className="mr-3">{skill.technology.name}</span>
 
               <Select
-                name="level"
                 className="flex-grow ml-3"
+                name="level"
+                label={tc('techSkillLevel_short')}
                 control={control}
                 required
                 options={techSkillLevels ?? []}
@@ -338,9 +344,9 @@ const EditSkillButton = ({ skill, onSkillEdited }: EditSkillButtonProps) => {
 
             <div className="flex justify-end pt-5">
               <Button className="pr-3" onClick={() => setModalOpen(false)}>
-                {t('cancel')}
+                {tb('cancel')}
               </Button>
-              <Button type="submit">{t('save')}</Button>
+              <Button type="submit">{tb('save')}</Button>
             </div>
           </form>
         </div>
@@ -358,6 +364,7 @@ const AddSkillButton = ({
   professionalId,
   onSkillAdded,
 }: AddSkillButtonProps) => {
+  const { t: tb } = useTranslation('button');
   const [modalOpen, setModalOpen] = useState(false);
   const { data: technologies } = trpc.technology.all.useQuery();
   const { data: techSkillLevels } = trpc.techSkillLevel.all.useQuery();
@@ -378,7 +385,7 @@ const AddSkillButton = ({
 
   return (
     <>
-      <Button onClick={() => setModalOpen(true)}>Add Skill</Button>
+      <Button onClick={() => setModalOpen(true)}>{tb('addSkill')}</Button>
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="w-[600px] px-[20px] py-[40px]">
           <AddSkillForm
@@ -406,7 +413,8 @@ const AddSkillForm = ({
   onCancel,
   onSubmit,
 }: AddSkillFormProps) => {
-  const { t } = useTranslation('button');
+  const { t: tc } = useTranslation();
+  const { t: tb } = useTranslation('button');
   const { control, handleSubmit } = useForm<{
     techSkills: {
       tech: { id: string; name: string } | null;
@@ -447,7 +455,7 @@ const AddSkillForm = ({
           <Autocomplete
             className="flex-grow basis-1 mr-3"
             name={`techSkills.${index}.tech`}
-            label="Technology"
+            label={tc('technology')}
             control={control}
             required
             options={technologies}
@@ -465,6 +473,7 @@ const AddSkillForm = ({
           <Select
             name={`techSkills.${index}.level`}
             className="flex-grow ml-3"
+            label={tc('techSkillLevel_short')}
             control={control}
             required
             options={levels}
@@ -487,16 +496,16 @@ const AddSkillForm = ({
           disabled={!selectedSkills.every((skill) => skill.tech && skill.level)}
           onClick={() => append({ tech: null, level: '' })}
         >
-          {t('addRow')}
+          {tb('addRow')}
         </Button>
       </div>
 
       <div className="flex justify-end pt-5">
         <Button className="pr-3" onClick={onCancel}>
-          {t('cancel')}
+          {tb('cancel')}
         </Button>
 
-        <Button type="submit">{t('save')}</Button>
+        <Button type="submit">{tb('save')}</Button>
       </div>
     </form>
   );
@@ -510,6 +519,8 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const serverSideTranslation = locale
     ? await serverSideTranslations(locale, [
         ...AdminLayout.namespacesRequired,
+        'common',
+        'dialog',
         'button',
       ])
     : {};

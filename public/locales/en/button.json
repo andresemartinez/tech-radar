@@ -1,9 +1,12 @@
 {
   "addRow": "Add Row",
+  "addSkill": "Add Skill",
   "cancel": "Cancel",
   "save": "Save",
   "yes": "Yes",
   "no": "No",
   "disable": "Disable",
-  "enable": "Enable"
+  "enable": "Enable",
+  "search": "Search",
+  "addCriteria": "Add Criteria"
 }

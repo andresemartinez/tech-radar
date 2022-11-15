@@ -1,6 +1,8 @@
 import { Button } from '@mui/material';
 import { ChartOptions } from 'chart.js';
+import { t } from 'i18next';
 import { GetStaticProps } from 'next';
+import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useMemo, useState } from 'react';
 import { Line } from 'react-chartjs-2';
@@ -45,6 +47,8 @@ type SearchFormProps = {
 };
 
 const SearchForm = ({ technologies, onSearch }: SearchFormProps) => {
+  const { t: tc } = useTranslation();
+  const { t: tb } = useTranslation('button');
   const { control, handleSubmit } = useForm<{
     tech: { id: string; name: string };
   }>();
@@ -55,7 +59,7 @@ const SearchForm = ({ technologies, onSearch }: SearchFormProps) => {
         <Autocomplete
           className="flex-grow basis-1 mr-3"
           name="tech"
-          label="Technology"
+          label={tc('technology')}
           control={control}
           required
           options={technologies}
@@ -65,7 +69,7 @@ const SearchForm = ({ technologies, onSearch }: SearchFormProps) => {
       </div>
 
       <div className="flex justify-start pt-5">
-        <Button type="submit">Search</Button>
+        <Button type="submit">{tb('search')}</Button>
       </div>
     </form>
   );
@@ -76,6 +80,7 @@ type TechStatsProps = {
 };
 
 const TechStats = ({ query }: TechStatsProps) => {
+  const { t: tc } = useTranslation();
   const { data: percentage } = trpc.techStats.percentage.useQuery(query);
   const { data: level } = trpc.techStats.level.useQuery(query);
 
@@ -83,13 +88,14 @@ const TechStats = ({ query }: TechStatsProps) => {
     <div className="flex flex-col">
       <div>
         <span>
-          Percentage: {percentage?.skillPercentage}% (
+          {tc('percentage')}: {percentage?.skillPercentage}% (
           {percentage?.skilledProfessionals}/{percentage?.totalProfessionals})
         </span>
       </div>
       <div>
         <span>
-          Level: {level?.name} ({level?.weight}/{level?.maxWeight})
+          {tc('techSkillLevel_short')}: {level?.name} ({level?.weight}/
+          {level?.maxWeight})
         </span>
       </div>
     </div>
@@ -149,6 +155,7 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
   const serverSideTranslation = locale
     ? await serverSideTranslations(locale, [
         ...AdminLayout.namespacesRequired,
+        'common',
         'button',
       ])
     : {};

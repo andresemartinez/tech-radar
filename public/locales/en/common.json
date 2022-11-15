@@ -1,1 +1,23 @@
-{}
+{
+  "name": "Name",
+  "email": "E-Mail",
+  "skill": "Skill",
+  "skill_one": "Skill",
+  "skill_other": "Skills",
+  "techSkill": "Tech Skill",
+  "techSkill_one": "Tech Skill",
+  "techSkill_other": "Tech Skills",
+  "category": "Category",
+  "category_one": "Category",
+  "category_other": "Categories",
+  "professional": "Professional",
+  "professional_one": "Professional",
+  "professional_other": "Professionals",
+  "technology": "Technology",
+  "technology_one": "Technologies",
+  "technology_other": "Technologies",
+  "techSkillLevel": "Tech Skill Level",
+  "techSkillLevel_short": "Level",
+  "operator": "Operator",
+  "percentage": "Percentage"
+}

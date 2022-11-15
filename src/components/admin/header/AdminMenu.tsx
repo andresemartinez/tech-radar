@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 import { Role } from '@prisma/client';
 import { useSession } from 'next-auth/react';
+import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
@@ -50,7 +51,7 @@ const AdminMenu = () => {
           [
             [
               {
-                name: 'Me',
+                name: 'me',
                 icon: PersonIcon,
                 url: 'me',
                 onClick: defaultOnClick,
@@ -58,19 +59,19 @@ const AdminMenu = () => {
             ],
             [
               {
-                name: 'Professionals Search',
+                name: 'professionalsSearch',
                 icon: SearchIcon,
                 url: 'professional/search',
                 onClick: defaultOnClick,
               },
               {
-                name: 'Tech stats',
+                name: 'techStats',
                 icon: TimelineIcon,
                 url: 'technology/stats',
                 onClick: defaultOnClick,
               },
               {
-                name: 'Tech radars',
+                name: 'techRadars',
                 icon: RadarIcon,
                 url: 'tech-radar',
                 onClick: defaultOnClick,
@@ -78,19 +79,19 @@ const AdminMenu = () => {
             ],
             [
               {
-                name: 'Technologies',
+                name: 'technologies',
                 icon: ComputerIcon,
                 url: 'technology',
                 onClick: defaultOnClick,
               },
               {
-                name: 'Categories',
+                name: 'categories',
                 icon: CategoryIcon,
                 url: 'technology/category',
                 onClick: defaultOnClick,
               },
               {
-                name: 'Skill Levels',
+                name: 'skillLevels',
                 icon: LeaderboardIcon,
                 url: 'technology/skill/level',
                 onClick: defaultOnClick,
@@ -98,7 +99,7 @@ const AdminMenu = () => {
             ],
             [
               {
-                name: 'Users',
+                name: 'users',
                 icon: PeopleIcon,
                 url: 'user',
                 roles: [Role.superadmin, Role.admin],
@@ -187,16 +188,19 @@ const AdminMenuItem = ({
   icon: Icon,
   url,
   onClick,
-}: AdminMenuItemProps) => (
-  <Link key={name} href={`/admin/${url}`} passHref>
-    <ListItemButton onClick={onClick}>
-      <ListItemIcon>
-        <Icon />
-      </ListItemIcon>
-      <ListItemText primary={name} />
-    </ListItemButton>
-  </Link>
-);
+}: AdminMenuItemProps) => {
+  const { t } = useTranslation('admin-header');
+  return (
+    <Link key={name} href={`/admin/${url}`} passHref>
+      <ListItemButton onClick={onClick}>
+        <ListItemIcon>
+          <Icon />
+        </ListItemIcon>
+        <ListItemText primary={t(name)} />
+      </ListItemButton>
+    </Link>
+  );
+};
 
 const AdminMenuDivider = () => {
   return <div className="h-[2px] mx-[16px] my-5 bg-gray-400"></div>;

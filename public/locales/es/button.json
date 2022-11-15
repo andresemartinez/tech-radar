@@ -1,9 +1,12 @@
 {
   "addRow": "Agregar Fila",
+  "addSkill": "Agregar habilidad",
   "cancel": "Cancelar",
   "save": "Guardar",
   "yes": "Si",
   "no": "No",
   "disable": "Deshabilitar",
-  "enable": "Habilitar"
+  "enable": "Habilitar",
+  "search": "Buscar",
+  "addCriteria": "Agregar filtro"
 }
