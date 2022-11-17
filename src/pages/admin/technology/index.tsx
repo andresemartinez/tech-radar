@@ -108,7 +108,13 @@ const AddTechForm = ({ categories, onCancel, onSubmit }: AddTechFormProps) => {
     name: string;
     description: string;
     categories: Category[];
-  }>();
+  }>({
+    defaultValues: {
+      name: '',
+      description: '',
+      categories: [],
+    },
+  });
 
   return (
     <form

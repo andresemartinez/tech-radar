@@ -1,10 +1,11 @@
-import { prisma } from '~/server/prisma';
 import {
   Prisma,
   TechRadarAngularAxisType,
   TechRadarRadialAxisType,
 } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
+import { prisma } from '~/server/prisma';
+import { RouterInput, RouterOutput } from '~/utils/trpc';
 
 const skillSelect = Prisma.validator<Prisma.TechSkillSelect>()({
   technology: {
@@ -109,7 +110,7 @@ const techSkillSelect = Prisma.validator<Prisma.TechSkillSelect>()({
 
 type TechSkill = Prisma.TechSkillGetPayload<{ select: typeof techSkillSelect }>;
 
-export async function techRadarDataset(id: string) {
+export async function techRadarDatasetById(id: string) {
   const techRadar = await prisma.techRadar.findUnique({
     select: techRadarSelect,
     where: {

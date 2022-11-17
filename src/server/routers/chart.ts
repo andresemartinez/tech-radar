@@ -2,9 +2,13 @@ import { z } from 'zod';
 import {
   defaultTechRadarDataset,
   professionalTechRadarDataset,
-  techRadarDataset,
+  techRadarDatasetById,
 } from '~/server/services/tech-radar';
 import { publicProcedure, router } from '~/server/trpc';
+import {
+  techRadarDatasetPreview,
+  techRadarPreviewInput,
+} from '../services/tech-radar/preview';
 
 export const chartRouter = router({
   techRadar: router({
@@ -15,7 +19,7 @@ export const chartRouter = router({
           id: z.string().uuid(),
         }),
       )
-      .query(({ input }) => techRadarDataset(input.id)),
+      .query(({ input }) => techRadarDatasetById(input.id)),
     byProfessional: publicProcedure
       .input(
         z.object({
@@ -26,5 +30,8 @@ export const chartRouter = router({
         const { id } = input;
         return professionalTechRadarDataset(id);
       }),
+    preview: publicProcedure
+      .input(techRadarPreviewInput)
+      .query(({ input }) => techRadarDatasetPreview(input)),
   }),
 });

@@ -1,10 +1,11 @@
-import { MenuItem, Select as MuiSelect, TextField } from '@mui/material';
+import { MenuItem, TextField } from '@mui/material';
 import { Controller, FieldValues, UseControllerProps } from 'react-hook-form';
 
 const Select = <O, TFieldValues extends FieldValues = FieldValues>({
   className,
   control,
   required = false,
+  disabled = false,
   name,
   label,
   options,
@@ -14,6 +15,7 @@ const Select = <O, TFieldValues extends FieldValues = FieldValues>({
   className: string;
   label?: string;
   required: boolean;
+  disabled: boolean;
   options: O[];
   getOptionLabel: (option: O) => string | JSX.Element | JSX.Element[];
   getOptionValue: (option: O) => string | number;
@@ -30,6 +32,7 @@ const Select = <O, TFieldValues extends FieldValues = FieldValues>({
           variant="outlined"
           label={label}
           select
+          disabled={disabled}
         >
           {options.map((option) => {
             const label = getOptionLabel(option);
