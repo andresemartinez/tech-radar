@@ -10,7 +10,7 @@ import {
 } from '@prisma/client';
 import { GetStaticProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Radar } from 'react-chartjs-2';
 import {
   Control,
@@ -45,7 +45,7 @@ type TechRadarConfig = {
 const RadarStudioAdminPage: NextPageWithLayout = () => {
   const [techRadar, setTechRadar] = useState<TechRadarConfig | null>(null);
   return (
-    <div className="flex flex-row w-screen  h-[calc(100vh-56px)] p-5">
+    <div className="flex flex-row w-full  h-[calc(100vh-56px)] p-5">
       <RadarStudioControls onChange={setTechRadar} />
       <div className="self-center w-[2px] h-5/6 bg-gray-300"></div>
       <RadarStudioPreview techRadar={techRadar} />
@@ -110,7 +110,7 @@ const TechRadarForm = ({
 
   return (
     <form
-      className="flex flex-col pr-5 w-1/2"
+      className="flex flex-col w-1/2"
       onSubmit={handleSubmit((data) => onSubmit(data))}
     >
       <TechRadarAngularAxisForm
@@ -143,7 +143,7 @@ const TechRadarAngularAxisForm = ({
   });
 
   return (
-    <div className="flex flex-row pt-2 pb-4 w-full">
+    <div className="flex flex-row pt-2 pb-4 pr-5">
       <Select
         className="pr-2 w-1/3"
         name="angularAxisType"
@@ -207,47 +207,52 @@ const TechRadarRadialAxesForm = ({
   control,
   professionals,
 }: TechRadarRadialAxesFormProps) => {
+  const radarCounter = useRef(2);
   const { fields, append, remove, update } = useFieldArray({
     control,
     name: 'radialAxes',
   });
 
   return (
-    <div className="flex flex-col py-2 w-full">
-      {fields.map((field, index) => (
-        <div key={field.id} className="flex flex-col py-2 w-full">
-          <div className="flex flex-row pb-2">
-            <TextInput
-              className="w-2/3"
-              name={`radialAxes.${index}.name`}
-              label="Name"
-              control={control}
-            />
-            <div className="flex flex-row justify-end w-1/3">
-              <ToggleRadialAxisButton
+    <>
+      <div className="pt-4 pb-2 overflow-y-auto">
+        <div className="flex flex-col pr-5">
+          {fields.map((field, index) => (
+            <div key={field.id} className="flex flex-col py-2">
+              <div className="flex flex-row pb-2">
+                <TextInput
+                  className="w-2/3"
+                  name={`radialAxes.${index}.name`}
+                  label="Name"
+                  control={control}
+                />
+                <div className="flex flex-row justify-end w-1/3">
+                  <ToggleRadialAxisButton
+                    control={control}
+                    index={index}
+                    update={update}
+                  />
+                  <IconButton
+                    disabled={fields.length <= 1}
+                    onClick={() => remove(index)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </div>
+              </div>
+              <TechRadarRadialAxisForm
                 control={control}
                 index={index}
-                update={update}
+                professionals={professionals}
               />
-              <IconButton
-                disabled={fields.length <= 1}
-                onClick={() => remove(index)}
-              >
-                <DeleteIcon />
-              </IconButton>
             </div>
-          </div>
-          <TechRadarRadialAxisForm
-            control={control}
-            index={index}
-            professionals={professionals}
-          />
+          ))}
         </div>
-      ))}
+      </div>
       <Button
         onClick={() =>
           append({
-            name: `Radar ${fields.length + 1}`,
+            name: `Radar ${radarCounter.current++}`,
             radialAxisType: TechRadarRadialAxisType.company,
             professionals: [],
             disabled: false,
@@ -256,7 +261,7 @@ const TechRadarRadialAxesForm = ({
       >
         Add Axis
       </Button>
-    </div>
+    </>
   );
 };
 
@@ -308,7 +313,7 @@ const TechRadarRadialAxisForm = ({
   });
 
   return (
-    <div className="flex flex-row py-2 flex-grow">
+    <div className="flex flex-row pt-2">
       <Select
         className="pr-2 w-1/3"
         name={`radialAxes.${index}.radialAxisType`}
@@ -387,7 +392,14 @@ const TechRadar = ({ techRadar }: TechRadarProps) => {
     { enabled: previewQuery !== null },
   );
 
-  return <Radar data={techRadarDataset ?? { labels: [], datasets: [] }} />;
+  return (
+    <Radar
+      data={techRadarDataset ?? { labels: [], datasets: [] }}
+      options={{
+        maintainAspectRatio: false,
+      }}
+    />
+  );
 };
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
