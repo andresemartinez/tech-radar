@@ -37,6 +37,9 @@ export const techRadarPreviewInput = z.object({
   radialAxes: z.array(
     z.object({
       name: z.string().min(1),
+      color: z
+        .string()
+        .regex(/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/),
       radialAxisType: z.nativeEnum(TechRadarRadialAxisType),
       professionals: z.array(z.string().uuid()),
     }),
@@ -168,6 +171,7 @@ export const techRadarDatasetPreview = async (
         return {
           name,
           data,
+          ...colorConfig(radialAxis.color),
         };
       }),
     );
@@ -177,4 +181,35 @@ export const techRadarDatasetPreview = async (
     labels: angularAxes.map((label) => label.name),
     datasets,
   };
+};
+
+const colorConfig = (hex: string) => {
+  return {
+    fill: true,
+    backgroundColor: applyOpacity(hex, '33'),
+    borderColor: hex,
+    pointBackgroundColor: hex,
+    pointBorderColor: '#fff',
+  };
+};
+
+const applyOpacity = (hex: string, opacity: string) => {
+  const baseColor = hex.substring(1);
+  let finalColor = baseColor;
+
+  if (baseColor.length === 3) {
+    const baseColor = hex
+      .substring(1)
+      .split('')
+      .map((digit) => `${digit}${digit}`)
+      .join('');
+
+    finalColor = `${baseColor}${opacity}`;
+  } else if (baseColor.length === 6) {
+    finalColor = `${baseColor}${opacity}`;
+  } else if (baseColor.length === 8) {
+    finalColor = `${baseColor.substring(0, 6)}${opacity}`;
+  }
+
+  return `#${finalColor}`;
 };

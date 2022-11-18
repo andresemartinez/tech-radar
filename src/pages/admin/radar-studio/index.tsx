@@ -21,6 +21,7 @@ import {
 } from 'react-hook-form';
 import { AdminLayout } from '~/components/admin/AdminLayout';
 import Autocomplete from '~/components/form/Autocomplete';
+import ColorPicker from '~/components/form/ColorPicker';
 import Select from '~/components/form/Select';
 import TextInput from '~/components/form/TextInput';
 import { NextPageWithLayout } from '~/pages/_app';
@@ -37,6 +38,7 @@ type TechRadarConfig = {
   techCategories: { id: string; name: string }[];
   radialAxes: {
     name: string;
+    color: string;
     radialAxisType: TechRadarRadialAxisType;
     professionals: { id: string; name: string }[];
     disabled: boolean;
@@ -87,6 +89,7 @@ const TechRadarForm = ({
   onSubmit,
 }: TechRadarFormProps) => {
   const { control, handleSubmit, watch } = useForm<TechRadarConfig>({
+    shouldFocusError: false,
     defaultValues: {
       angularAxisType: TechRadarAngularAxisType.technology,
       techCategories: [],
@@ -94,6 +97,7 @@ const TechRadarForm = ({
       radialAxes: [
         {
           name: 'Radar 1',
+          color: '#F47373',
           radialAxisType: TechRadarRadialAxisType.company,
           professionals: [],
           disabled: false,
@@ -255,7 +259,11 @@ const TechRadarRadialAxesForm = ({
                   label="Name"
                   control={control}
                 />
-                <div className="flex flex-row justify-end w-1/3">
+                <div className="flex flex-row justify-end items-center w-1/3">
+                  <ColorPicker
+                    name={`radialAxes.${index}.color`}
+                    control={control}
+                  />
                   <ToggleRadialAxisButton
                     control={control}
                     index={index}
@@ -282,6 +290,7 @@ const TechRadarRadialAxesForm = ({
         onClick={() =>
           append({
             name: `Radar ${radarCounter.current++}`,
+            color: '#FFFFFF',
             radialAxisType: TechRadarRadialAxisType.company,
             professionals: [],
             disabled: false,
