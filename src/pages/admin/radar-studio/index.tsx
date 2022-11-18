@@ -24,6 +24,7 @@ import Autocomplete from '~/components/form/Autocomplete';
 import Select from '~/components/form/Select';
 import TextInput from '~/components/form/TextInput';
 import { NextPageWithLayout } from '~/pages/_app';
+import { capitalize } from '~/utils/string';
 import { RouterOutput, trpc } from '~/utils/trpc';
 
 type Technology = RouterOutput['technology']['all'][number];
@@ -137,28 +138,56 @@ const TechRadarAngularAxisForm = ({
   techCategories,
   technologies,
 }: TechRadarAngularAxisFormProps) => {
+  return (
+    <div className="flex flex-row pt-2 pb-4 pr-5">
+      <AngularAxisTypeInput control={control} />
+
+      <AngularAxisInput
+        control={control}
+        techCategories={techCategories}
+        technologies={technologies}
+      />
+    </div>
+  );
+};
+
+type AngularAxisTypeInputProps = {
+  control: Control<TechRadarConfig>;
+};
+
+const AngularAxisTypeInput = ({ control }: AngularAxisTypeInputProps) => {
+  return (
+    <Select
+      className="pr-2 w-1/3"
+      name="angularAxisType"
+      label="Angular Axis"
+      control={control}
+      required
+      options={Object.values(TechRadarAngularAxisType)}
+      getOptionLabel={(option) => (option ? capitalize(option) : '')}
+      getOptionValue={(option) => option}
+    />
+  );
+};
+
+type AngularAxisInputProps = {
+  control: Control<TechRadarConfig>;
+  techCategories: TechCategory[];
+  technologies: Technology[];
+};
+
+const AngularAxisInput = ({
+  control,
+  techCategories,
+  technologies,
+}: AngularAxisInputProps) => {
   const angularAxisType = useWatch({
     control,
     name: 'angularAxisType',
   });
 
   return (
-    <div className="flex flex-row pt-2 pb-4 pr-5">
-      <Select
-        className="pr-2 w-1/3"
-        name="angularAxisType"
-        label="Angular Axis"
-        control={control}
-        required
-        options={Object.values(TechRadarAngularAxisType)}
-        getOptionLabel={(option) =>
-          option
-            ? `${option.substring(0, 1).toUpperCase()}${option.substring(1)}`
-            : ''
-        }
-        getOptionValue={(option) => option}
-      />
-
+    <>
       <Autocomplete
         className={`pl-2 w-2/3 ${
           angularAxisType === TechRadarAngularAxisType.category ? '' : 'hidden'
@@ -194,7 +223,7 @@ const TechRadarAngularAxisForm = ({
         getOptionLabel={(option) => option.name ?? ''}
         isOptionEqualToValue={(option, value) => option.id === value.id}
       />
-    </div>
+    </>
   );
 };
 
@@ -307,41 +336,68 @@ const TechRadarRadialAxisForm = ({
   index,
   professionals,
 }: TechRadarRadialAxisFormProps) => {
+  return (
+    <div className="flex flex-row pt-2">
+      <RadialAxisTypeInput control={control} index={index} />
+
+      <RadialAxisInput
+        control={control}
+        index={index}
+        professionals={professionals}
+      />
+    </div>
+  );
+};
+
+type RadialAxisTypeInputProps = {
+  control: Control<TechRadarConfig>;
+  index: number;
+};
+
+const RadialAxisTypeInput = ({ control, index }: RadialAxisTypeInputProps) => {
+  return (
+    <Select
+      className="pr-2 w-1/3"
+      name={`radialAxes.${index}.radialAxisType`}
+      label="Radial Axis"
+      control={control}
+      required
+      options={Object.values(TechRadarRadialAxisType)}
+      getOptionLabel={(option) => (option ? capitalize(option) : '')}
+      getOptionValue={(option) => option}
+    />
+  );
+};
+
+type RadialAxisInputProps = {
+  control: Control<TechRadarConfig>;
+  index: number;
+  professionals: Professional[];
+};
+
+const RadialAxisInput = ({
+  control,
+  index,
+  professionals,
+}: RadialAxisInputProps) => {
   const radialAxisType = useWatch({
     control,
     name: `radialAxes.${index}.radialAxisType`,
   });
 
   return (
-    <div className="flex flex-row pt-2">
-      <Select
-        className="pr-2 w-1/3"
-        name={`radialAxes.${index}.radialAxisType`}
-        label="Radial Axis"
-        control={control}
-        required
-        options={Object.values(TechRadarRadialAxisType)}
-        getOptionLabel={(option) =>
-          option
-            ? `${option.substring(0, 1).toUpperCase()}${option.substring(1)}`
-            : ''
-        }
-        getOptionValue={(option) => option}
-      />
-
-      <Autocomplete
-        className="pl-2 w-2/3"
-        name={`radialAxes.${index}.professionals`}
-        label="Professionals"
-        control={control}
-        required={radialAxisType === TechRadarRadialAxisType.professional}
-        disabled={radialAxisType !== TechRadarRadialAxisType.professional}
-        multiple
-        options={professionals}
-        getOptionLabel={(option) => option.name ?? ''}
-        isOptionEqualToValue={(option, value) => option.id === value.id}
-      />
-    </div>
+    <Autocomplete
+      className="pl-2 w-2/3"
+      name={`radialAxes.${index}.professionals`}
+      label="Professionals"
+      control={control}
+      required={radialAxisType === TechRadarRadialAxisType.professional}
+      disabled={radialAxisType !== TechRadarRadialAxisType.professional}
+      multiple
+      options={professionals}
+      getOptionLabel={(option) => option.name ?? ''}
+      isOptionEqualToValue={(option, value) => option.id === value.id}
+    />
   );
 };
 

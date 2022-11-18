@@ -14,8 +14,8 @@ const Select = <O, TFieldValues extends FieldValues = FieldValues>({
 }: Omit<UseControllerProps<TFieldValues>, 'rules'> & {
   className: string;
   label?: string;
-  required: boolean;
-  disabled: boolean;
+  required?: boolean;
+  disabled?: boolean;
   options: O[];
   getOptionLabel: (option: O) => string | JSX.Element | JSX.Element[];
   getOptionValue: (option: O) => string | number;
