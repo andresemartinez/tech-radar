@@ -500,7 +500,7 @@ const TechRadar = ({ techRadar }: TechRadarProps) => {
 
   const { data: techRadarDataset } = trpc.chart.techRadar.preview.useQuery(
     previewQuery,
-    { enabled: previewQuery !== null },
+    { keepPreviousData: true },
   );
 
   return (
