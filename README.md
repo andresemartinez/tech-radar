@@ -1,10 +1,11 @@
-# Tech Radar (WIP)
+# Tech Radar (T3 stack POC)
 
+This is an excuse to try the [T3](https://github.com/t3-oss/create-t3-app) stack
 ## Development
 
 ### Requirements
 
-- Node >= 14
+- Node >= 16
 - Yarn
 - Docker & Docker Compose (for running Postgres)
 

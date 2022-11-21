@@ -7,10 +7,11 @@ const ColorPicker = <TFieldValues extends FieldValues = FieldValues>({
   control,
   required = false,
   name,
+  colors,
 }: Omit<UseControllerProps<TFieldValues>, 'rules'> & {
   className?: string;
   required?: boolean;
-  disabled?: boolean;
+  colors?: string[];
 }) => {
   const [pickerOpen, setPickerOpen] = useState(false);
   const buttonRef = useRef<HTMLDivElement>(null);
@@ -52,6 +53,7 @@ const ColorPicker = <TFieldValues extends FieldValues = FieldValues>({
                 <BlockPicker
                   ref={field.ref}
                   color={field.value}
+                  colors={colors}
                   onChangeComplete={({ hex: color }) => {
                     field.onChange(color);
                     setPickerOpen(false);

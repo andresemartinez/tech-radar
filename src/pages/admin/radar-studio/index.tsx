@@ -32,17 +32,21 @@ type Technology = RouterOutput['technology']['all'][number];
 type TechCategory = RouterOutput['techCategory']['all'][number];
 type Professional = RouterOutput['professional']['all'][number];
 
+const colors = ['#ff595e', '#ffca3a', '#8ac926', '#1982c4', '#6a4c93'];
+
+type RadialAxis = {
+  name: string;
+  color: string;
+  radialAxisType: TechRadarRadialAxisType;
+  professionals: { id: string; name: string }[];
+  disabled: boolean;
+};
+
 type TechRadarConfig = {
   angularAxisType: TechRadarAngularAxisType;
   technologies: { id: string; name: string }[];
   techCategories: { id: string; name: string }[];
-  radialAxes: {
-    name: string;
-    color: string;
-    radialAxisType: TechRadarRadialAxisType;
-    professionals: { id: string; name: string }[];
-    disabled: boolean;
-  }[];
+  radialAxes: RadialAxis[];
 };
 
 const RadarStudioAdminPage: NextPageWithLayout = () => {
@@ -97,7 +101,7 @@ const TechRadarForm = ({
       radialAxes: [
         {
           name: 'Radar 1',
-          color: '#F47373',
+          color: '#ff595e',
           radialAxisType: TechRadarRadialAxisType.company,
           professionals: [],
           disabled: false,
@@ -240,7 +244,6 @@ const TechRadarRadialAxesForm = ({
   control,
   professionals,
 }: TechRadarRadialAxesFormProps) => {
-  const radarCounter = useRef(2);
   const { fields, append, remove, update } = useFieldArray({
     control,
     name: 'radialAxes',
@@ -263,6 +266,7 @@ const TechRadarRadialAxesForm = ({
                   <ColorPicker
                     name={`radialAxes.${index}.color`}
                     control={control}
+                    colors={colors}
                   />
                   <ToggleRadialAxisButton
                     control={control}
@@ -286,19 +290,10 @@ const TechRadarRadialAxesForm = ({
           ))}
         </div>
       </div>
-      <Button
-        onClick={() =>
-          append({
-            name: `Radar ${radarCounter.current++}`,
-            color: '#FFFFFF',
-            radialAxisType: TechRadarRadialAxisType.company,
-            professionals: [],
-            disabled: false,
-          })
-        }
-      >
-        Add Axis
-      </Button>
+      <AddRadialAxisButton
+        control={control}
+        onClick={(radialAxis) => append(radialAxis)}
+      />
     </>
   );
 };
@@ -331,6 +326,57 @@ const ToggleRadialAxisButton = ({
     >
       <DisableRadialAxisIcon />
     </IconButton>
+  );
+};
+
+type AddRadialAxisButtonProps = {
+  control: Control<TechRadarConfig>;
+  onClick: (radialAxis: RadialAxis) => void;
+};
+
+const AddRadialAxisButton = ({
+  control,
+  onClick,
+}: AddRadialAxisButtonProps) => {
+  const radarCounter = useRef(2);
+  const radialAxes = useWatch({
+    control,
+    name: 'radialAxes',
+  });
+
+  const nextColor = useMemo(() => {
+    const usedColors = radialAxes
+      .map((radialAxis) => radialAxis.color)
+      .reduce((map, color) => {
+        let times = map.get(color);
+        if (times === undefined) {
+          times = 0;
+        }
+        map.set(color, times + 1);
+        return map;
+      }, new Map<string, number>());
+
+    const sortedColors = [...colors].sort(
+      (a, b) => (usedColors.get(a) ?? 0) - (usedColors.get(b) ?? 0),
+    );
+
+    return sortedColors[0] as string;
+  }, [radialAxes]);
+
+  return (
+    <Button
+      onClick={() =>
+        onClick({
+          name: `Radar ${radarCounter.current++}`,
+          color: nextColor,
+          radialAxisType: TechRadarRadialAxisType.company,
+          professionals: [],
+          disabled: false,
+        })
+      }
+    >
+      Add Axis
+    </Button>
   );
 };
 
