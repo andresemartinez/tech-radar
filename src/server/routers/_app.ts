@@ -8,6 +8,7 @@ import { techStatsRouter } from './tech-stats';
 import { technologyRouter } from './technology';
 import { techRadarRouter } from './tech-radar';
 import { userRouter } from './user';
+import { techInterest } from './tech-interest';
 
 export const appRouter = router({
   healthz: publicProcedure.query(() => 'yay!'),
@@ -21,6 +22,7 @@ export const appRouter = router({
   techSkill: techSkillRouter,
   techStats: techStatsRouter,
   techRadar: techRadarRouter,
+  techInterest: techInterest,
 });
 
 export type AppRouter = typeof appRouter;

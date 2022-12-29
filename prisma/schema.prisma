@@ -70,16 +70,27 @@ model VerificationToken {
 // Tech radar -------------------------------------------------------------------------------------
 
 model Professional {
-  id               String      @id @default(uuid())
-  user             User        @relation(fields: [userId], references: [id])
-  userId           String      @unique
-  creationDateTime DateTime    @default(now())
+  id               String         @id @default(uuid())
+  user             User           @relation(fields: [userId], references: [id])
+  userId           String         @unique
+  creationDateTime DateTime       @default(now())
   techSkills       TechSkill[]
-  active           Boolean     @default(true)
-  ownedTechRadars  TechRadar[] @relation(name: "TechRadarOwner")
+  active           Boolean        @default(true)
+  ownedTechRadars  TechRadar[]    @relation(name: "TechRadarOwner")
   techRadars       TechRadar[]
+  techInterest     TechInterest[]
 
   @@index([userId])
+}
+
+model TechInterest {
+  id                 String       @id @default(uuid())
+  creationDateTime   DateTime     @default(now())
+  lastUpdateDateTime DateTime     @default(now()) @updatedAt
+  technology         Technology   @relation(fields: [technologyId], references: [id])
+  technologyId       String
+  professional       Professional @relation(fields: [professionalId], references: [id])
+  professionalId     String
 }
 
 model TechSkill {
@@ -104,13 +115,14 @@ model TechSkillLevel {
 }
 
 model Technology {
-  id          String               @id @default(uuid())
-  name        String               @unique
-  description String
-  techSkills  TechSkill[]
-  categories  TechnologyCategory[]
-  active      Boolean              @default(true)
-  techRadars  TechRadar[]
+  id           String               @id @default(uuid())
+  name         String               @unique
+  description  String
+  techSkills   TechSkill[]
+  categories   TechnologyCategory[]
+  active       Boolean              @default(true)
+  techRadars   TechRadar[]
+  TechInterest TechInterest[]
 }
 
 model TechnologyCategory {
@@ -132,14 +144,14 @@ enum TechRadarRadialAxisType {
 }
 
 model TechRadar {
-  id             String               @id @default(uuid())
+  id             String                   @id @default(uuid())
   name           String
-  owner          Professional         @relation(name: "TechRadarOwner", fields: [ownerId], references: [id])
+  owner          Professional             @relation(name: "TechRadarOwner", fields: [ownerId], references: [id])
   ownerId        String
   angularAxis    TechRadarAngularAxisType
   radialAxis     TechRadarRadialAxisType
   professionals  Professional[]
   technologies   Technology[]
   techCategories TechnologyCategory[]
-  active         Boolean              @default(true)
+  active         Boolean                  @default(true)
 }
